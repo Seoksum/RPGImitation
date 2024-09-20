@@ -11,7 +11,6 @@
 #include "Managers/UIManager.h"
 #include "Kismet/GameplayStatics.h"
 #include "Characters/MyPlayerController.h"
-#include "Components/InventoryComponent.h"
 
 
 ARPGImitationCharacter::ARPGImitationCharacter()
@@ -46,8 +45,7 @@ ARPGImitationCharacter::ARPGImitationCharacter()
 	FollowCamera->bUsePawnControlRotation = false; // Camera does not rotate relative to arm
 
 	
-	Inventory = CreateDefaultSubobject<UInventoryComponent>(TEXT("Inventory"));
-
+	
 }
 
 //////////////////////////////////////////////////////////////////////////
@@ -115,13 +113,8 @@ void ARPGImitationCharacter::MoveRight(float Value)
 	}
 }
 
-void ARPGImitationCharacter::ToggleInventory()
-{
-}
-
 void ARPGImitationCharacter::OnItemAcquired(class AItem* InItem)
 {
-	
 	if (InItem)
 	{
 		AMyPlayerController* PlayerController = Cast<AMyPlayerController>(UGameplayStatics::GetPlayerController(GetWorld(), 0));
@@ -132,9 +125,23 @@ void ARPGImitationCharacter::OnItemAcquired(class AItem* InItem)
 			{
 				UIManager->AddItemToInventory(InItem);
 			}
-		}
+		}	
+	}
+}
 
-		
+void ARPGImitationCharacter::SB_OnItemAcquired(class AItem* InItem)
+{
+	if (InItem)
+	{
+		AMyPlayerController* PlayerController = Cast<AMyPlayerController>(UGameplayStatics::GetPlayerController(GetWorld(), 0));
+		if (PlayerController)
+		{
+			UIManager = PlayerController->UIManager;
+			if (UIManager)
+			{
+				UIManager->SB_AddItemToInventory(InItem);
+			}
+		}
 	}
 }
 

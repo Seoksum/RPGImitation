@@ -33,9 +33,14 @@ protected:
     // UI 상태 변경 함수
     void ToggleInventory();
 
-private:
+    void SBToggleInventory();
+
+public:
 
     UPROPERTY(VisibleAnywhere)
-    bool IsInventoryActived;
+        bool IsInventoryActived;
+
+    UPROPERTY(VisibleAnywhere)
+    bool SBIsInventoryActived;
 
 };

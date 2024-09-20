@@ -23,6 +23,7 @@ void AMyPlayerController::SetupInputComponent()
 
     // 입력 바인딩: 'Tab' 키로 인벤토리 UI를 토글
     InputComponent->BindAction("ToggleInventory", IE_Pressed, this, &AMyPlayerController::ToggleInventory);
+    InputComponent->BindAction("SBToggleInventory", IE_Pressed, this, &AMyPlayerController::SBToggleInventory);
 }
 
 void AMyPlayerController::ToggleInventory()
@@ -41,14 +42,37 @@ void AMyPlayerController::ToggleInventory()
 
         if (IsInventoryActived)
         {
-            //UIManager->SetUIState(EUIState::UI_None);
-            UIManager->UpdateUIState(EUIState::UI_Inventory, false);
+            //UIManager->UpdateUIState(EUIState::UI_Inventory, false);
+            SetInputMode(FInputModeGameOnly());
         }
         else
         {
-            //UIManager->SetUIState(EUIState::UI_Inventory); 
-            UIManager->UpdateUIState(EUIState::UI_Inventory, true);
+            //UIManager->UpdateUIState(EUIState::UI_Inventory, true);
+            SetInputMode(FInputModeGameAndUI());
         }
+
         IsInventoryActived = !IsInventoryActived;
+        UIManager->UpdateUIState(EUIState::UI_Inventory, IsInventoryActived);
+        bShowMouseCursor = IsInventoryActived;
+    }
+}
+
+void AMyPlayerController::SBToggleInventory()
+{
+    if (UIManager)
+    {
+        if (SBIsInventoryActived)
+        {
+            //UIManager->UpdateUIState(EUIState::UI_SBInventory, false);
+            SetInputMode(FInputModeGameOnly());
+        }
+        else
+        {
+            //UIManager->UpdateUIState(EUIState::UI_SBInventory, true);
+            SetInputMode(FInputModeGameAndUI());
+        }
+        SBIsInventoryActived = !SBIsInventoryActived;
+        UIManager->UpdateUIState(EUIState::UI_SBInventory, SBIsInventoryActived);
+        bShowMouseCursor = SBIsInventoryActived;
     }
 }

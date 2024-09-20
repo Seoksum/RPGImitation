@@ -50,18 +50,16 @@ public:
 	FORCEINLINE class USpringArmComponent* GetCameraBoom() const { return CameraBoom; }
 	FORCEINLINE class UCameraComponent* GetFollowCamera() const { return FollowCamera; }
 
-	UPROPERTY()
-	class UInventoryComponent* Inventory;
-	
-	UPROPERTY()
+
+	UPROPERTY(VisibleAnywhere)
 	class UUIManager* UIManager;
 
 
 public:
 
-	void ToggleInventory();
-
 	void OnItemAcquired(class AItem* InItem);
+
+	void SB_OnItemAcquired(class AItem* InItem);
 
 
 };

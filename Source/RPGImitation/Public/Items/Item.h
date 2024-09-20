@@ -6,22 +6,6 @@
 #include "GameFramework/Actor.h"
 #include "Item.generated.h"
 
-USTRUCT(BlueprintType)
-struct RPGIMITATION_API FItemData
-{
-	GENERATED_BODY()
-
-public:
-	// 아이템 이름
-	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = "Item")
-	FText ItemName;
-
-	// 아이템 이미지
-	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = "Item")
-	UTexture2D* ItemImage;
-
-};
-
 UCLASS()
 class RPGIMITATION_API AItem : public AActor
 {
@@ -42,35 +26,23 @@ protected:
 	virtual void Tick(float DeltaTime) override;
 
 	UFUNCTION()
-	void OnOverlapBegin(class UPrimitiveComponent* OverlappedComp, class AActor* OtherActor,
-		class UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep,
-		const FHitResult& SweepResult);
+	void OnOverlapBegin(class UPrimitiveComponent* OverlappedComp, class AActor* OtherActor,class UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep,const FHitResult& SweepResult);
 
-public:
-
-
-	FText GetItemName();
 
 
 public:
 
-	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "Item")
-	FItemData ItemData;
+	UPROPERTY(VisibleAnywhere, Category = "Overlap")
+	class ARPGImitationCharacter* Player;
 
 
 public:
-
 
 	UPROPERTY(EditAnywhere, Category = "Item")
 	class UTexture2D* Thumbnail;
 
 	UPROPERTY(EditAnywhere, Category = "Item")
 	FText ItemName;
-
-	UPROPERTY(EditAnywhere, Category = "Item")  // meta = (MultiLine = true))
-	FText ItemDescription;
-
-
 
 
 };

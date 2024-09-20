@@ -6,6 +6,7 @@
 #include "Components/TextBlock.h"
 #include "Items/Item.h"
 #include "Components/Image.h"
+#include "Items/ItemData.h"
 
 
 void UItemWidget::NativeOnInitialized()
@@ -19,24 +20,22 @@ void UItemWidget::NativeOnListItemObjectSet(UObject* ListItemObject)
 {
 	IUserObjectListEntry::NativeOnListItemObjectSet(ListItemObject);
 
-	AItem* Item = Cast<AItem>(ListItemObject);
+	UItemData* Item = Cast<UItemData>(ListItemObject);
 	if (Item == nullptr)	return;
-	
-	UE_LOG(LogTemp, Log, TEXT("NativeOnListItemObjectSet"));
+
 	SetItemInfo(Item);
 }
 
-void UItemWidget::SetItemInfo(class AItem* InItem)
+void UItemWidget::SetItemInfo(UItemData* InItem)
 {
 	if (nullptr == InItem) return;
 
-	FText Name = InItem->ItemName;
-	FText Temp = FText::FromString("Test !! ");
-	ItemName->SetText(Temp);
-	UE_LOG(LogTemp, Log, TEXT("[Widget]Item Name : %s"), *Name.ToString());
+	FText Name = FText::FromString(InItem->ItemName);
+	ItemName->SetText(Name);
 
 	UTexture2D* ThumbnailImage = InItem->Thumbnail;
 	ItemImage->SetBrushFromTexture(ThumbnailImage);
 }
+
 
 

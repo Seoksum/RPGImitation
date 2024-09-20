@@ -18,9 +18,8 @@ AItem::AItem()
 	CollisionComp->SetCollisionProfileName(TEXT("Trigger"));
 	CollisionComp->OnComponentBeginOverlap.AddDynamic(this, &AItem::OnOverlapBegin);
 
-	ItemName = FText::FromString("HpPotion");
-	const FString ThumbnailPath = "Texture2D'/Game/Contents/Images/potion.potion'";
-	Thumbnail = Cast<UTexture2D>(StaticLoadObject(UTexture2D::StaticClass(), nullptr, *ThumbnailPath));
+	//CollisionComp->OnComponentBeginOverlap.AddDynamic(this, &AItem::OnOverlapEnd);
+
 }
 
 // Called when the game starts or when spawned
@@ -55,22 +54,27 @@ void AItem::Tick(float DeltaTime)
 			5.0f                         // 라인 두께
 		);
 	}
+
+	if (Player && CollisionComp)
+	{
+		// 타겟 액터와 오버랩 상태를 체크
+		bool bCurrentlyOverlapping = CollisionComp->IsOverlappingActor(Player);
+		if (bCurrentlyOverlapping)
+		{
+			Player->SB_OnItemAcquired(this);
+			//Player->OnItemAcquired(this);
+		}
+		
+	}
 }
 
 void AItem::OnOverlapBegin(UPrimitiveComponent* OverlappedComp, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult)
 {
-	ARPGImitationCharacter* Player = Cast<ARPGImitationCharacter>(OtherActor);
-	if (Player)
-	{
-		Player->OnItemAcquired(this);
-	}
-
+	Player = Cast<ARPGImitationCharacter>(OtherActor);
+	//if (Player)
+	//{
+	//	//Player->OnItemAcquired(this);
+	//	Player->SB_OnItemAcquired(this);
+	//}
 }
-
-FText AItem::GetItemName()
-{
-	return ItemName;
-}
-
-
 

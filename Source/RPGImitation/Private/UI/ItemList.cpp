@@ -7,7 +7,7 @@
 #include "UI/ItemWidget.h"
 #include "Items/Item.h"
 #include "../RPGImitationCharacter.h"
-
+#include "Items/ItemData.h"
 
 void UItemList::NativeConstruct()
 {
@@ -37,28 +37,26 @@ void UItemList::RefreshListView()
 
 }
 
-void UItemList::AddItemToList(class AItem* NewItemData)
+void UItemList::AddItemToList(class AItem* InItem)
 {
 	if (!NearbyItemList) return;
 
-	UItemWidget* NewItemWidget = CreateWidget<UItemWidget>(GetWorld(), ItemWidgetClass);
-	if (NewItemWidget)
+	UItemData* NewItemWidgetData = NewObject<UItemData>(InItem);
+	if (NewItemWidgetData)
 	{
-		// 아이템 데이터를 설정하는 함수 호출
-		NewItemWidget->SetItemInfo(NewItemData);
-		NearbyItemList->AddItem(NewItemWidget);
+		NewItemWidgetData->ItemName = InItem->ItemName.ToString();
+		NewItemWidgetData->Thumbnail = InItem->Thumbnail;
+
+		NearbyItemList->AddItem(NewItemWidgetData);
 		NearbyItemList->RequestRefresh();
 	}
+
+	//UItemWidget* NewItemWidget = CreateWidget<UItemWidget>(GetWorld(), ItemWidgetClass);
+	//if (NewItemWidget)
+	//{
+	//	NewItemWidget->SetItemInfo(NewItemData);
+	//	NearbyItemList->AddItem(NewItemWidget);
+	//	NearbyItemList->RequestRefresh();
+	//}
 }
 
-TArray<UObject*> UItemList::GetCurrentListItems()
-{
-	if (NearbyItemList)
-	{
-		// ListView에 있는 현재 아이템 목록을 반환
-		return NearbyItemList->GetListItems();
-	}
-
-	// 만약 ListView가 유효하지 않다면 빈 배열을 반환
-	return TArray<UObject*>();
-}

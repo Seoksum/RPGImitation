@@ -5,7 +5,6 @@
 #include "CoreMinimal.h"
 #include "Blueprint/UserWidget.h"
 #include "Blueprint/IUserObjectListEntry.h"
-#include "Items/Item.h"
 #include "ItemWidget.generated.h"
 
 /**
@@ -26,7 +25,7 @@ protected:
 	
 public:
 
-	void SetItemInfo(class AItem* InItem);
+	void SetItemInfo(UItemData* InItem);
 
 	UPROPERTY(meta = (BindWidget))
 	class UImage* ItemImage;

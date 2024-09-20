@@ -4,7 +4,6 @@
 
 #include "CoreMinimal.h"
 #include "Blueprint/UserWidget.h"
-#include "Items/Item.h"
 #include "ItemList.generated.h"
 
 /**
@@ -29,10 +28,9 @@ public:
 
 	void RefreshListView();
 
-	UFUNCTION(BlueprintCallable)
-	void AddItemToList(class AItem* NewItemData);
+	//UFUNCTION(BlueprintCallable)
+	void AddItemToList(class AItem* InItem);
 
-	TArray<UObject*> GetCurrentListItems();
 
 
 protected:

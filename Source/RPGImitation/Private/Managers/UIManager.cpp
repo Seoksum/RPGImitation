@@ -4,6 +4,7 @@
 #include "Managers/UIManager.h"
 #include "Blueprint/UserWidget.h"
 #include "UI/ItemList.h"
+#include "UI/ScrollBoxInventoryWidget.h"
 
 UUIManager::UUIManager()
 {
@@ -12,6 +13,13 @@ UUIManager::UUIManager()
 	{
 		InventoryWidgetClass = ItemListWidgetClass.Class;
 		InventoryWidget = CreateWidget<UItemList>(GetWorld(), InventoryWidgetClass);
+	}
+
+	static ConstructorHelpers::FClassFinder<UUserWidget> SBItemListWidgetClass(TEXT("WidgetBlueprint'/Game/Contents/UI/WBP_ScrollBoxItemWidget.WBP_ScrollBoxItemWidget_C'"));
+	if (SBItemListWidgetClass.Succeeded())
+	{
+		SB_InventoryWidgetClass = SBItemListWidgetClass.Class;
+		SB_InventoryWidget = CreateWidget<UScrollBoxInventoryWidget>(GetWorld(), SB_InventoryWidgetClass);
 	}
 
 
@@ -38,7 +46,6 @@ void UUIManager::UpdateUI()
 		if (InventoryWidgetClass)
 		{
 			CurrentWidget = CreateWidget<UUserWidget>(GetWorld(), InventoryWidgetClass);
-			ShowListWidget();
 		}
 		break;
 
@@ -68,17 +75,28 @@ void UUIManager::UpdateUI()
 
 void UUIManager::UpdateUIState(EUIState NewState, bool IsActive)
 {
+	
 	if (NewState == EUIState::UI_Inventory)
 	{
 		if (IsActive)
 		{
-			//InventoryWidget = CreateWidget<UItemList>(GetWorld(), InventoryWidgetClass);
 			InventoryWidget->AddToViewport();
 		}
 		else
 		{
 			InventoryWidget->RemoveFromViewport();
-			//InventoryWidget = nullptr;
+		}
+	}
+
+	else if (NewState == EUIState::UI_SBInventory)
+	{
+		if (IsActive)
+		{
+			SB_InventoryWidget->AddToViewport();
+		}
+		else
+		{
+			SB_InventoryWidget->RemoveFromViewport();
 		}
 	}
 }
@@ -96,21 +114,11 @@ void UUIManager::AddItemToInventory(class AItem* InItem)
 	}
 }
 
-void UUIManager::ShowListWidget()
+void UUIManager::SB_AddItemToInventory(class AItem* InItem)
 {
-	UItemList* ItemListWidget = Cast<UItemList>(CurrentWidget);
-	if (ItemListWidget)
+	if (SB_InventoryWidget)
 	{
-		TArray<UObject*> Items = ItemListWidget->GetCurrentListItems();
-
-		// 아이템 목록을 로그로 출력
-		for (UObject* Item : Items)
-		{
-			if (Item)
-			{
-				UE_LOG(LogTemp, Warning, TEXT("Item: %s"), *Item->GetName());
-			}
-		}
+		SB_InventoryWidget->AddItemToInventory(InItem);
 	}
 }
 
