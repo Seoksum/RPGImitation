@@ -49,6 +49,12 @@ public:
     UPROPERTY(EditAnywhere, Category = "UI")
     TSubclassOf<class UScrollBoxInventoryWidget> SB_InventoryWidgetClass;
 
+    UPROPERTY(EditAnywhere, Category = "UI")
+        TSubclassOf<UUserWidget> MapWidgetClass;
+
+    UPROPERTY(EditAnywhere, Category = "UI")
+        TSubclassOf<UUserWidget> MainMenuWidgetClass;
+
 public:
 
     // UI 상태를 변경하는 함수

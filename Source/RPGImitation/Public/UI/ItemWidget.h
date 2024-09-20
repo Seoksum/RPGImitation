@@ -25,7 +25,7 @@ protected:
 	
 public:
 
-	void SetItemInfo(UItemData* InItem);
+	void SetItemInfo(class UItemData* InItem);
 
 	UPROPERTY(meta = (BindWidget))
 	class UImage* ItemImage;
