@@ -4,14 +4,23 @@
 
 #include "CoreMinimal.h"
 #include "Blueprint/UserWidget.h"
+#include "Blueprint/IUserObjectListEntry.h"
 #include "MailWidget.generated.h"
 
 /**
  * 
  */
 UCLASS()
-class RPGIMITATION_API UMailWidget : public UUserWidget
+class RPGIMITATION_API UMailWidget : public UUserWidget, public IUserObjectListEntry
 {
 	GENERATED_BODY()
-	
+
+protected:
+
+	virtual void NativeOnListItemObjectSet(UObject* ListItemObject) override;
+
+
+
+
+
 };
