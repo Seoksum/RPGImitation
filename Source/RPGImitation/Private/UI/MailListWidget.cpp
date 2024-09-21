@@ -4,19 +4,27 @@
 #include "UI/MailListWidget.h"
 #include "Components/ListView.h"
 #include "UI/MailWidget.h"
+#include "Items/MailData.h"
 
-void UMailListWidget::AddMailToList(const FString& InMessage)
+void UMailListWidget::NativeConstruct()
+{
+	Super::NativeConstruct();
+
+}
+
+void UMailListWidget::AddMailToList(class UMailData* InMailData)
 {
 	if (!MailListView) return;
 
-	
-
-	//UItemData* NewItemWidgetData = NewObject<UItemData>(InItem);
-	//if (NewItemWidgetData)
+	//UMailWidget* NewItemWidget = CreateWidget<UMailWidget>(GetWorld(), MailWidgetClass);
+	//if (NewItemWidget)
 	//{
-	//	NewItemWidgetData->ItemName = InItem->ItemName.ToString();
-	//	NewItemWidgetData->Thumbnail = InItem->Thumbnail;
-	//	MailListView->AddItem(NewItemWidgetData);
+	//	NewItemWidget->SetMailInfo(InMailData);
+	//	MailListView->AddItem(InMailData);
 	//	MailListView->RequestRefresh();
 	//}
+
+
+	MailListView->AddItem(InMailData);
+	//MailListView->RequestRefresh();
 }

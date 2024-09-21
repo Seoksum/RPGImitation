@@ -79,6 +79,7 @@ void FUDPReceiveRunnable::ReceiveData()
                                 MailData->Message = ReceivedString;
 
                                 UIManager->AddMailToMailBox(MailData);
+                                
                             }
                         }
                     }

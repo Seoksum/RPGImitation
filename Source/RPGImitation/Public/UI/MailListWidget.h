@@ -15,8 +15,9 @@ class RPGIMITATION_API UMailListWidget : public UUserWidget
 	GENERATED_BODY()
 	
 public:
+	virtual void NativeConstruct() override;
 
-	void AddMailToList(const FString& InMessage);
+	void AddMailToList(class UMailData* InMailData);
 
 
 protected:

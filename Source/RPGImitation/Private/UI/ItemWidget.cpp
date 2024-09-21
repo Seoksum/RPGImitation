@@ -2,9 +2,7 @@
 
 
 #include "UI/ItemWidget.h"
-#include "Items/Item.h"
 #include "Components/TextBlock.h"
-#include "Items/Item.h"
 #include "Components/Image.h"
 #include "Items/ItemData.h"
 
@@ -18,6 +16,7 @@ void UItemWidget::NativeOnInitialized()
 
 void UItemWidget::NativeOnListItemObjectSet(UObject* ListItemObject)
 {
+	UE_LOG(LogTemp, Log, TEXT("NativeOnListItemObjectSet "));
 	IUserObjectListEntry::NativeOnListItemObjectSet(ListItemObject);
 
 	UItemData* Item = Cast<UItemData>(ListItemObject);

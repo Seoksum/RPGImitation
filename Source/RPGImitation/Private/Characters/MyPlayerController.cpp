@@ -3,6 +3,7 @@
 
 #include "Characters/MyPlayerController.h"
 #include "Managers/UIManager.h"
+#include "Items/MailData.h"
 
 AMyPlayerController::AMyPlayerController()
 {
@@ -40,8 +41,11 @@ void AMyPlayerController::EnableMyCheat()
     {
         GEngine->AddOnScreenDebugMessage(-1, 5.0f, FColor::Green, TEXT("Custom Cheat Activated!"));
 
-        // 예시로, 플레이어 체력을 999로 설정하는 치트
-        //MyCharacter->SetHealth(999);
+        UMailData* MailData = NewObject<UMailData>();
+        MailData->Sender = "Server";
+        MailData->Message = "ABC";
+
+        UIManager->AddMailToMailBox(MailData);
     }
 }
 

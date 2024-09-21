@@ -28,7 +28,7 @@ UUIManager::UUIManager()
 	if (MailListWidgetClassRef.Succeeded())
 	{
 		MailListWidgetClass = MailListWidgetClassRef.Class;
-		MailListWidget = CreateWidget<UMailListWidget>(GetWorld(), SB_InventoryWidgetClass);
+		MailListWidget = CreateWidget<UMailListWidget>(GetWorld(), MailListWidgetClass);
 	}
 
 }
@@ -133,7 +133,7 @@ void UUIManager::AddMailToMailBox(class UMailData* InMailData)
 {
 	if (MailListWidget)
 	{
-		//MailListWidget->AddMailToList(InMessage);
+		MailListWidget->AddMailToList(InMailData);
 	}
 }
 

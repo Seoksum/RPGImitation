@@ -19,6 +19,9 @@ protected:
 
 	virtual void NativeOnListItemObjectSet(UObject* ListItemObject) override;
 
+public:
+
+	void SetMailInfo(class UMailData* InMail);
 
 public:
 
