@@ -24,30 +24,38 @@ void AMyPlayerController::SetupInputComponent()
     // 입력 바인딩: 'Tab' 키로 인벤토리 UI를 토글
     InputComponent->BindAction("ToggleInventory", IE_Pressed, this, &AMyPlayerController::ToggleInventory);
     InputComponent->BindAction("SBToggleInventory", IE_Pressed, this, &AMyPlayerController::SBToggleInventory);
+
+    InputComponent->BindAction("MyCheat", IE_Pressed, this, &AMyPlayerController::EnableMyCheat);
+
+    // 콘솔 명령어와 바인딩된 함수
+    if (GEngine)
+    {
+        GEngine->Exec(GetWorld(), TEXT("MyCheat"));
+    }
 }
+
+void AMyPlayerController::EnableMyCheat()
+{
+    if (GEngine)
+    {
+        GEngine->AddOnScreenDebugMessage(-1, 5.0f, FColor::Green, TEXT("Custom Cheat Activated!"));
+
+        // 예시로, 플레이어 체력을 999로 설정하는 치트
+        //MyCharacter->SetHealth(999);
+    }
+}
+
 
 void AMyPlayerController::ToggleInventory()
 {
-    //UE_LOG(LogTemp, Log, TEXT("ToggleInventory !! "));
     if (UIManager)
     {
-        //if (UIManager->GetCurrentUIState() == EUIState::UI_Inventory)
-        //{
-        //    UIManager->SetUIState(EUIState::UI_None); // UI 숨김
-        //}
-        //else
-        //{
-        //    UIManager->SetUIState(EUIState::UI_Inventory); // 인벤토리 UI 표시
-        //}
-
         if (IsInventoryActived)
         {
-            //UIManager->UpdateUIState(EUIState::UI_Inventory, false);
             SetInputMode(FInputModeGameOnly());
         }
         else
         {
-            //UIManager->UpdateUIState(EUIState::UI_Inventory, true);
             SetInputMode(FInputModeGameAndUI());
         }
 

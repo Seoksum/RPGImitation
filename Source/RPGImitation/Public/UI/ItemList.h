@@ -26,8 +26,6 @@ public:
 	UPROPERTY(meta = (BindWidget))
 	class UListView* NearbyItemList;
 
-	void RefreshListView();
-
 	//UFUNCTION(BlueprintCallable)
 	void AddItemToList(class AItem* InItem);
 

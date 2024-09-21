@@ -23,3 +23,4 @@ public:
     UTexture2D* Thumbnail;
 
 };
+

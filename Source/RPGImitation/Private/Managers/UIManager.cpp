@@ -5,6 +5,8 @@
 #include "Blueprint/UserWidget.h"
 #include "UI/ItemList.h"
 #include "UI/ScrollBoxInventoryWidget.h"
+#include "UI/MailListWidget.h"
+
 
 UUIManager::UUIManager()
 {
@@ -22,6 +24,12 @@ UUIManager::UUIManager()
 		SB_InventoryWidget = CreateWidget<UScrollBoxInventoryWidget>(GetWorld(), SB_InventoryWidgetClass);
 	}
 
+	static ConstructorHelpers::FClassFinder<UUserWidget> MailListWidgetClassRef(TEXT("WidgetBlueprint'/Game/Contents/UI/Mail/WBP_MailListWidget.WBP_MailListWidget_C'"));
+	if (MailListWidgetClassRef.Succeeded())
+	{
+		MailListWidgetClass = MailListWidgetClassRef.Class;
+		MailListWidget = CreateWidget<UMailListWidget>(GetWorld(), SB_InventoryWidgetClass);
+	}
 
 }
 
@@ -49,19 +57,13 @@ void UUIManager::UpdateUI()
 		}
 		break;
 
-	case EUIState::UI_Map:
-		if (MapWidgetClass)
+	case EUIState::UI_Mail:
+		if (MailListWidgetClass)
 		{
-			CurrentWidget = CreateWidget(GetWorld(), MapWidgetClass);
+			CurrentWidget = CreateWidget(GetWorld(), MailListWidgetClass);
 		}
 		break;
 
-	case EUIState::UI_MainMenu:
-		if (MainMenuWidgetClass)
-		{
-			CurrentWidget = CreateWidget(GetWorld(), MainMenuWidgetClass);
-		}
-		break;
 	case EUIState::UI_None:
 		break;
 	}
@@ -99,6 +101,11 @@ void UUIManager::UpdateUIState(EUIState NewState, bool IsActive)
 			SB_InventoryWidget->RemoveFromViewport();
 		}
 	}
+
+	else if (NewState == EUIState::UI_Mail)
+	{
+		
+	}
 }
 
 EUIState UUIManager::GetCurrentUIState()
@@ -119,6 +126,14 @@ void UUIManager::SB_AddItemToInventory(class AItem* InItem)
 	if (SB_InventoryWidget)
 	{
 		SB_InventoryWidget->AddItemToInventory(InItem);
+	}
+}
+
+void UUIManager::AddMailToMailBox(class UMailData* InMailData)
+{
+	if (MailListWidget)
+	{
+		//MailListWidget->AddMailToList(InMessage);
 	}
 }
 

@@ -20,6 +20,16 @@ protected:
 	virtual void NativeOnListItemObjectSet(UObject* ListItemObject) override;
 
 
+public:
+
+	UPROPERTY(meta = (BindWidget))
+	class UTextBlock* TextFrom;
+
+	UPROPERTY(meta = (BindWidget))
+	class UTextBlock* TextContents;
+
+	UPROPERTY(meta = (BindWidget))
+	class UTextBlock* TextDay;
 
 
 

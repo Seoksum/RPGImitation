@@ -35,7 +35,9 @@ protected:
 
     void SBToggleInventory();
 
-public:
+    void EnableMyCheat();
+
+private:
 
     UPROPERTY(VisibleAnywhere)
         bool IsInventoryActived;

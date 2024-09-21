@@ -14,4 +14,21 @@ class RPGIMITATION_API UMailListWidget : public UUserWidget
 {
 	GENERATED_BODY()
 	
+public:
+
+	void AddMailToList(const FString& InMessage);
+
+
+protected:
+
+	UPROPERTY(meta = (BindWidget))
+	class UListView* MailListView;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "HUD")
+	TSubclassOf<class UMailWidget> MailWidgetClass;
+
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "HUD")
+	class UMailWidget* MailWidget;
+
+
 };

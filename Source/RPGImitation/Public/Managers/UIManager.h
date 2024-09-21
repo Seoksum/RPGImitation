@@ -15,8 +15,7 @@ enum class EUIState : uint8
 {
     UI_Inventory UMETA(DisplayName = "Inventory"),
     UI_SBInventory UMETA(DisplayName = "SB_Inventory"),
-    UI_Map       UMETA(DisplayName = "Map"),
-    UI_MainMenu  UMETA(DisplayName = "MainMenu"),
+    UI_Mail UMETA(DisplayName = "Mail"),
     UI_None      UMETA(DisplayName = "None")
 };
 
@@ -42,6 +41,9 @@ public:
     UPROPERTY(VisibleAnywhere, BlueprintReadOnly)
     class UScrollBoxInventoryWidget* SB_InventoryWidget;
 
+    UPROPERTY(VisibleAnywhere, BlueprintReadOnly)
+    class UMailListWidget* MailListWidget;
+
     // 위젯 클래스 참조
     UPROPERTY(EditAnywhere, Category = "UI")
     TSubclassOf<class UItemList> InventoryWidgetClass;
@@ -50,10 +52,9 @@ public:
     TSubclassOf<class UScrollBoxInventoryWidget> SB_InventoryWidgetClass;
 
     UPROPERTY(EditAnywhere, Category = "UI")
-        TSubclassOf<UUserWidget> MapWidgetClass;
+    TSubclassOf<class UMailListWidget> MailListWidgetClass;
 
-    UPROPERTY(EditAnywhere, Category = "UI")
-        TSubclassOf<UUserWidget> MainMenuWidgetClass;
+
 
 public:
 
@@ -68,6 +69,7 @@ public:
 
     void AddItemToInventory(class AItem* InItem);
     void SB_AddItemToInventory(class AItem* InItem);
+    void AddMailToMailBox(class UMailData* InMailData);
 
 
 };
