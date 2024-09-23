@@ -16,7 +16,6 @@ void UItemWidget::NativeOnInitialized()
 
 void UItemWidget::NativeOnListItemObjectSet(UObject* ListItemObject)
 {
-	UE_LOG(LogTemp, Log, TEXT("NativeOnListItemObjectSet "));
 	IUserObjectListEntry::NativeOnListItemObjectSet(ListItemObject);
 
 	UItemData* Item = Cast<UItemData>(ListItemObject);

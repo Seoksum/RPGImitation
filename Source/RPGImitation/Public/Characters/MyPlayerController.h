@@ -21,8 +21,11 @@ public:
     AMyPlayerController();
 
     // UIManager 인스턴스를 관리할 변수
-    UPROPERTY()
+    UPROPERTY(BlueprintReadWrite)
     class UUIManager* UIManager;
+
+    UFUNCTION(BlueprintCallable)
+        UUIManager* GetUIManager();
 
 protected:
 

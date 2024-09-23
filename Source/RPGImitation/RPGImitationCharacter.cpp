@@ -140,6 +140,7 @@ void ARPGImitationCharacter::SB_OnItemAcquired(class AItem* InItem)
 			if (UIManager)
 			{
 				UIManager->SB_AddItemToInventory(InItem);
+				
 			}
 		}
 	}

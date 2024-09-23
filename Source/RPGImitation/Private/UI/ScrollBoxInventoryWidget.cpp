@@ -12,19 +12,19 @@ void UScrollBoxInventoryWidget::AddItemToInventory(class AItem* InItem)
 {
 	if (ItemWidgetClass && ItemScrollBox)
 	{
-		//UItemData* NewItemWidgetData = NewObject<UItemData>(InItem);
-		//NewItemWidgetData->ItemName = InItem->ItemName.ToString();
-		//NewItemWidgetData->Thumbnail = InItem->Thumbnail;
+		UItemData* NewItemWidgetData = NewObject<UItemData>(InItem);
+		NewItemWidgetData->ItemName = InItem->ItemName.ToString();
+		NewItemWidgetData->Thumbnail = InItem->Thumbnail;
 
-		//UItemWidget* NewItemWidget = CreateWidget<UItemWidget>(this, ItemWidgetClass);
+		UItemWidget* NewItemWidget = CreateWidget<UItemWidget>(this, ItemWidgetClass);
 
-		//if (NewItemWidget)
-		//{
-		//	// 아이템 정보를 설정
-		//	NewItemWidget->SetItemInfo_SB(NewItemWidgetData);
+		if (NewItemWidget)
+		{
+			// 아이템 정보를 설정
+			NewItemWidget->SetItemInfo(NewItemWidgetData);
 
-		//	// ScrollBox에 추가
-		//	ItemScrollBox->AddChild(NewItemWidget);
-		//}
+			// ScrollBox에 추가
+			ItemScrollBox->AddChild(NewItemWidget);
+		}
 	}
 }

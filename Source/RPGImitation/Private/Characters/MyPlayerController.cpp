@@ -11,6 +11,12 @@ AMyPlayerController::AMyPlayerController()
 
 }
 
+UUIManager* AMyPlayerController::GetUIManager()
+{
+    if(UIManager!=nullptr) return UIManager;
+    return nullptr;
+}
+
 void AMyPlayerController::BeginPlay()
 {
     Super::BeginPlay();
@@ -39,8 +45,6 @@ void AMyPlayerController::EnableMyCheat()
 {
     if (GEngine)
     {
-        GEngine->AddOnScreenDebugMessage(-1, 5.0f, FColor::Green, TEXT("Custom Cheat Activated!"));
-
         UMailData* MailData = NewObject<UMailData>();
         MailData->Sender = "Server";
         MailData->Message = "ABC";

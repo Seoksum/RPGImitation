@@ -20,7 +20,7 @@ enum class EUIState : uint8
 };
 
 
-UCLASS()
+UCLASS(Blueprintable, BlueprintType)
 class RPGIMITATION_API UUIManager : public UObject
 {
 	GENERATED_BODY()
@@ -44,6 +44,9 @@ public:
     UPROPERTY(VisibleAnywhere, BlueprintReadOnly)
     class UMailListWidget* MailListWidget;
 
+    UPROPERTY(EditAnywhere, Category = "UI")
+        class UFullMailWidget* FullMailWidget;
+
     // 위젯 클래스 참조
     UPROPERTY(EditAnywhere, Category = "UI")
     TSubclassOf<class UItemList> InventoryWidgetClass;
@@ -54,6 +57,9 @@ public:
     UPROPERTY(EditAnywhere, Category = "UI")
     TSubclassOf<class UMailListWidget> MailListWidgetClass;
 
+    UPROPERTY(EditAnywhere, Category = "UI")
+    TSubclassOf<class UFullMailWidget> FullMailWidgetClass;
+
 
 
 public:
@@ -63,6 +69,8 @@ public:
 
     // 현재 상태에 따라 UI 표시
     void UpdateUI();
+
+    UFUNCTION(BlueprintCallable)
     void UpdateUIState(EUIState NewState, bool IsActive);
 
     EUIState GetCurrentUIState();

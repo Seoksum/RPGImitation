@@ -24,7 +24,9 @@ void UMailListWidget::AddMailToList(class UMailData* InMailData)
 	//	MailListView->RequestRefresh();
 	//}
 
+	UE_LOG(LogTemp, Log, TEXT("UMailListWidget::AddMailToList"));
+	UMailData* MailData = NewObject<UMailData>(this);
 
 	MailListView->AddItem(InMailData);
-	//MailListView->RequestRefresh();
+	MailListView->RequestRefresh();
 }

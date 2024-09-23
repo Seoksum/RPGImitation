@@ -6,6 +6,7 @@
 #include "UI/ItemList.h"
 #include "UI/ScrollBoxInventoryWidget.h"
 #include "UI/MailListWidget.h"
+#include "UI/FullMailWidget.h"
 
 
 UUIManager::UUIManager()
@@ -28,7 +29,21 @@ UUIManager::UUIManager()
 	if (MailListWidgetClassRef.Succeeded())
 	{
 		MailListWidgetClass = MailListWidgetClassRef.Class;
-		MailListWidget = CreateWidget<UMailListWidget>(GetWorld(), MailListWidgetClass);
+		//MailListWidget = CreateWidget<UMailListWidget>(GetWorld(), MailListWidgetClass);
+	}
+
+	static ConstructorHelpers::FClassFinder<UUserWidget> FullMailWidgetClassRef(TEXT("WidgetBlueprint'/Game/Contents/UI/Mail/WBP_FullMailWidget.WBP_FullMailWidget_C'"));
+	if (FullMailWidgetClassRef.Succeeded())
+	{
+		FullMailWidgetClass = FullMailWidgetClassRef.Class;
+		FullMailWidget = CreateWidget<UFullMailWidget>(GetWorld(), FullMailWidgetClass);
+
+		if (FullMailWidget && FullMailWidget->WBP_MailListWidget)
+		{
+			MailListWidget = FullMailWidget->WBP_MailListWidget;
+		}
+
+
 	}
 
 }
@@ -77,7 +92,6 @@ void UUIManager::UpdateUI()
 
 void UUIManager::UpdateUIState(EUIState NewState, bool IsActive)
 {
-	
 	if (NewState == EUIState::UI_Inventory)
 	{
 		if (IsActive)
@@ -104,7 +118,16 @@ void UUIManager::UpdateUIState(EUIState NewState, bool IsActive)
 
 	else if (NewState == EUIState::UI_Mail)
 	{
-		
+		if (IsActive)
+		{
+			FullMailWidget->AddToViewport();
+			//MailListWidget->AddToViewport();
+		}
+		else
+		{
+			FullMailWidget->RemoveFromViewport();
+			//MailListWidget->RemoveFromViewport();
+		}
 	}
 }
 
