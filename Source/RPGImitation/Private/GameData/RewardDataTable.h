@@ -16,6 +16,8 @@ struct FRewardDataTable : public FTableRowBase
 
 public:
 
+	FRewardDataTable() : Day(0), ItemName("None"), ItemPath("None") {}
+
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Stat")
 		int32 Day;
 

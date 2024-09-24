@@ -9,6 +9,12 @@
 
 UMyGameInstance::UMyGameInstance()
 {
+	FString RewardDataPath = TEXT("DataTable'/Game/Contents/Data/RewardDataTable.RewardDataTable'");
+	static ConstructorHelpers::FObjectFinder<UDataTable> RewardDataPathObject(*RewardDataPath);
+	if (RewardDataPathObject.Succeeded())
+	{
+		RewardDataTable = RewardDataPathObject.Object;
+	}
 
 }
 
@@ -16,7 +22,7 @@ void UMyGameInstance::Init()
 {
 	Super::Init();
 
-	UE_LOG(LogTemp, Log, TEXT("MyGameInstance::Init()"));
+	
 	LoadLastLoginTime();
 	CheckLoginDate();
 
@@ -26,7 +32,7 @@ void UMyGameInstance::Shutdown()
 {
 	Super::Shutdown();
 
-	UE_LOG(LogTemp, Log, TEXT("MyGameInstance::Shutdown()"));
+
 	SaveLastLoginTime();
 }
 
@@ -68,3 +74,9 @@ void UMyGameInstance::SaveLastLoginTime()
 		UGameplayStatics::SaveGameToSlot(LoginSaveGame, TEXT("LoginSaveSlot"), 0);
 	}
 }
+
+FRewardDataTable* UMyGameInstance::GetRewardDataTable(int32 Day)
+{
+	return RewardDataTable->FindRow<FRewardDataTable>(*FString::FromInt(Day), TEXT(""));
+}
+

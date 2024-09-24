@@ -30,11 +30,12 @@ public:
 	void LoadLastLoginTime();
 	void SaveLastLoginTime();
 
+	FRewardDataTable* GetRewardDataTable(int32 Day);
 
 protected:
 
-
-	FRewardDataTable* RewardDataTable;
+	UPROPERTY()
+	UDataTable* RewardDataTable;
 
 	FDateTime LastLoginDate;
 

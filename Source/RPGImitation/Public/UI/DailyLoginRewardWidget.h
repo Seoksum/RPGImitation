@@ -4,6 +4,7 @@
 
 #include "CoreMinimal.h"
 #include "Blueprint/UserWidget.h"
+#include "GameData/RewardDataTable.h"
 #include "DailyLoginRewardWidget.generated.h"
 
 /**
@@ -16,13 +17,16 @@ struct FRewardInfo
     GENERATED_BODY()
 
     UPROPERTY(EditAnywhere, BlueprintReadWrite)
-        int32 DayNumber;  // 몇 번째 날인지
+        int32 Index; 
 
     UPROPERTY(EditAnywhere, BlueprintReadWrite)
-        FString RewardDescription;  // 보상 설명
+        int32 Day; 
 
     UPROPERTY(EditAnywhere, BlueprintReadWrite)
-        UTexture2D* RewardThumbnail;  // 보상 아이콘
+        FString ItemName;
+
+    UPROPERTY(EditAnywhere, BlueprintReadWrite)
+        UTexture2D* ItemThumbnail;
 };
 
 UCLASS()
@@ -32,15 +36,48 @@ class RPGIMITATION_API UDailyLoginRewardWidget : public UUserWidget
 
 public:
 
-    void CreateDailyLoginRewardInfo();
+    virtual void NativeConstruct() override;
+    virtual void NativeOnInitialized() override;
 
+    void CreateRewardInfos();
+
+    void InitGridPanel();
+
+    void OnClickButton(int32 ButtonIndex);
 	
 protected:
+
+    UPROPERTY(BlueprintReadOnly)
+    TArray<FRewardInfo> RewardInfos;
+
+    UPROPERTY(BlueprintReadOnly)
+    FRewardDataTable RewardDataTable;
+
+    UPROPERTY(BlueprintReadWrite)
+    int32 ItemCount;
+
+    UPROPERTY(BlueprintReadWrite)
+        int32 RowSize;
+
+    UPROPERTY(BlueprintReadWrite)
+        int32 ColSize;
+
+
+public:
+
+    UPROPERTY()
+    class ULoginSaveGame* SaveLoginSaveGame;
 
     UPROPERTY(meta = (BindWidget))
     class UGridPanel* GP_Reward;
 
-    TArray<FRewardInfo> RewardInfo;
+    UPROPERTY(EditAnywhere, Category = "UI")
+    class UDailyLoginRewardButtonWidget* ButtonWidget;
 
+    // 위젯 클래스 참조
+    UPROPERTY(BlueprintReadWrite, Category = "HUDWidgets", Meta = (BlueprintProtected = true))
+    TSubclassOf<class UDailyLoginRewardButtonWidget> ButtonWidgetClass;
+
+    TArray<class UDailyLoginRewardButtonWidget*> ButtonWidgetArray;
 
 };

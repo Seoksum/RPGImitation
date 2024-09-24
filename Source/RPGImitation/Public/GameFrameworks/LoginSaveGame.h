@@ -16,11 +16,13 @@ class RPGIMITATION_API ULoginSaveGame : public USaveGame
 	
 public:
 
-	
+	ULoginSaveGame();
 
 	UPROPERTY()
 	FDateTime LastLoginTime;
 
+	UPROPERTY()
+	int32 LastSelectedButtonIndex;
 
 
 };

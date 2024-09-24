@@ -3,3 +3,7 @@
 
 #include "GameFrameworks/LoginSaveGame.h"
 
+ULoginSaveGame::ULoginSaveGame()
+{
+	LastSelectedButtonIndex = 1;
+}
