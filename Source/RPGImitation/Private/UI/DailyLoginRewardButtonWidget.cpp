@@ -28,11 +28,14 @@ void UDailyLoginRewardButtonWidget::SetRewardInfo(int32 Day, FText ItemName, UTe
 
 void UDailyLoginRewardButtonWidget::OnClickAcceptButton()
 {
-	ULoginSaveGame* LoadLoginSaveGame = Cast<ULoginSaveGame>(UGameplayStatics::LoadGameFromSlot(TEXT("MySaveSlot"), 0));
-	if (LoadLoginSaveGame)
-	{
-		int32 RewardDay = LoadLoginSaveGame->LastSelectedButtonIndex;
-		OnRewardButtonClicked.Broadcast(ButtonIndex);
-		//UGameplayStatics::SaveGameToSlot(LoadLoginSaveGame, TEXT("MySaveSlot"), 0);		
-	}
+	OnRewardButtonClicked.Broadcast(ButtonIndex);
+	UE_LOG(LogTemp, Log, TEXT("Button Index: %d"), ButtonIndex);
+	//ULoginSaveGame* LoadLoginSaveGame = Cast<ULoginSaveGame>(UGameplayStatics::LoadGameFromSlot(TEXT("MySaveSlot"), 0));
+	//if (LoadLoginSaveGame)
+	//{
+	//	int32 RewardDay = LoadLoginSaveGame->LastSelectedButtonIndex;
+	//	OnRewardButtonClicked.Broadcast(ButtonIndex);
+	//	UE_LOG(LogTemp, Log, TEXT("Button Index: %d"), ButtonIndex);
+	//	//UGameplayStatics::SaveGameToSlot(LoadLoginSaveGame, TEXT("MySaveSlot"), 0);		
+	//}
 }

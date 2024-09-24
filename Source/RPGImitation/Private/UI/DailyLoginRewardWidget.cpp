@@ -77,7 +77,6 @@ void UDailyLoginRewardWidget::InitGridPanel()
 	if (LoginSaveGame)
 	{
 		LastButtonIndex = LoginSaveGame->LastSelectedButtonIndex;
-		UE_LOG(LogTemp, Log, TEXT("LastButtonIndex : %d"), LastButtonIndex);
 	}
 
 	for (const FRewardInfo& RewardInfo : RewardInfos)
@@ -114,16 +113,17 @@ void UDailyLoginRewardWidget::OnClickButton(int32 ButtonIndex)
 		UE_LOG(LogTemp, Log, TEXT("ButtonIndex : %d"), ButtonIndex);
 	}
 
-	int32 NextButtonIndex = ButtonIndex + 1;// 다음 버튼을 활성화
+	int32 NextButtonIndex = ButtonIndex +1;// 다음 버튼을 활성화
 	if (ButtonWidgetArray.IsValidIndex(NextButtonIndex))
 	{
 		ButtonWidgetArray[NextButtonIndex]->SetIsEnabled(true);
 	}
 
 	ULoginSaveGame* SaveGameInstance = Cast<ULoginSaveGame>(UGameplayStatics::CreateSaveGameObject(ULoginSaveGame::StaticClass()));
+	//ULoginSaveGame* SaveGameInstance = Cast<ULoginSaveGame>(UGameplayStatics::LoadGameFromSlot(TEXT("MySaveSlot"), 0));
 	if (SaveGameInstance)
 	{
-		SaveLoginSaveGame->LastSelectedButtonIndex = NextButtonIndex;
+		SaveGameInstance->LastSelectedButtonIndex = NextButtonIndex;
 		UGameplayStatics::SaveGameToSlot(SaveGameInstance, TEXT("MySaveSlot"), 0);
 	}
 }
