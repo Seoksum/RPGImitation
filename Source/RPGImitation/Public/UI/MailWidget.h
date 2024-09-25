@@ -28,6 +28,8 @@ public:
 	UFUNCTION()
 	void OnClickMailMessage();
 
+	FORCEINLINE void SetIsInViewportNow(bool InViewport) { IsInViewportNow = InViewport; }
+
 public:
 
 	UPROPERTY(meta = (BindWidget))
@@ -52,7 +54,13 @@ protected:
 	TSubclassOf<class UReceivePostalWidget> ReceivePostalWidgetClass;
 
 	UPROPERTY(BlueprintReadOnly)
-		class UMailData* ReceiveMail;
+	class UMailData* ReceiveMail;
+
+	UPROPERTY(BlueprintReadOnly)
+	bool IsInViewportNow;
+
+	UPROPERTY(BlueprintReadWrite)
+	bool IsInventoryItem;
 
 
 };

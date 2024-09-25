@@ -7,4 +7,5 @@ void UMailData::SetRewardEventMessage()
 {
 	Sender = "System";
 	Title = "Attendance Event Reward !! ";
+	Message = "Thank you for checking in for today!";
 }

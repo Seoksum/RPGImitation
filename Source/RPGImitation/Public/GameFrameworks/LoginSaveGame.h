@@ -24,5 +24,4 @@ public:
 	UPROPERTY()
 	int32 LastSelectedButtonIndex;
 
-
 };

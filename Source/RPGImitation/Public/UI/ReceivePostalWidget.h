@@ -22,18 +22,28 @@ protected:
 	virtual void NativeOnDragDetected(const FGeometry& InGeometry, const FPointerEvent& InMouseEvent, UDragDropOperation*& OutOperation) override;
 	virtual bool NativeOnDrop(const FGeometry& InGeometry, const FDragDropEvent& InDragDropEvent, UDragDropOperation* InOperation) override;
 
+	UFUNCTION()
+	void OnClickCloseButton();
+
+public:
+
+	void SetMail(class UMailData* Mail);
 	
 public:
 
 	UPROPERTY(meta = (BindWidget))
-		class UTextBlock* T_Title;
+	class UTextBlock* T_Title;
 
 	UPROPERTY(meta = (BindWidget))
-		class UTextBlock* T_Sender;
+	class UTextBlock* T_Sender;
 
 	UPROPERTY(meta = (BindWidget))
-		class UTextBlock* T_Message;
+	class UTextBlock* T_Message;
 
-	void SetMail(class UMailData* Mail);
+	UPROPERTY(meta = (BindWidget))
+	class UButton* Btn_Close;
+
+	UPROPERTY(BlueprintReadOnly)
+	class UMailWidget* ParentWidget;
 
 };

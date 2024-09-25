@@ -4,13 +4,15 @@
 #include "UI/ReceivePostalWidget.h"
 #include "Items/MailData.h"
 #include "Components/TextBlock.h"
+#include "Components/Button.h"
 #include "Blueprint/WidgetBlueprintLibrary.h"
+#include "UI/MailWidget.h"
 
 void UReceivePostalWidget::NativeConstruct()
 {
 	Super::NativeConstruct();
 
-	
+	Btn_Close->OnClicked.AddDynamic(this, &UReceivePostalWidget::OnClickCloseButton);
 }
 
 FReply UReceivePostalWidget::NativeOnMouseButtonDown(const FGeometry& InGeometry, const FPointerEvent& InMouseEvent)
@@ -50,6 +52,12 @@ bool UReceivePostalWidget::NativeOnDrop(const FGeometry& InGeometry, const FDrag
 	}
 
 	return false;
+}
+
+void UReceivePostalWidget::OnClickCloseButton()
+{
+	RemoveFromParent();
+	ParentWidget->SetIsInViewportNow(false);
 }
 
 void UReceivePostalWidget::SetMail(class UMailData* Mail)
