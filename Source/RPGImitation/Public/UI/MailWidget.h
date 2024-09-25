@@ -42,14 +42,17 @@ public:
 	UPROPERTY(meta = (BindWidget))
 	class UTextBlock* TextDay;
 
-	UPROPERTY(BlueprintReadOnly)
-	class UMailData* ReceiveMail;
+	UPROPERTY(meta = (BindWidget))
+		class UCheckBox* CB_MailSelected;
 
 protected:
 
 	// 위젯 클래스 참조
 	UPROPERTY(BlueprintReadWrite, Category = "UI", Meta = (BlueprintProtected = true))
 	TSubclassOf<class UReceivePostalWidget> ReceivePostalWidgetClass;
+
+	UPROPERTY(BlueprintReadOnly)
+		class UMailData* ReceiveMail;
 
 
 };

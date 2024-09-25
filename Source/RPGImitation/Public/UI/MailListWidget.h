@@ -19,6 +19,9 @@ public:
 
 	void AddMailToList(class UMailData* InMailData);
 
+	UFUNCTION(BlueprintCallable)
+	void RemoveCheckedMailToList();
+
 
 protected:
 

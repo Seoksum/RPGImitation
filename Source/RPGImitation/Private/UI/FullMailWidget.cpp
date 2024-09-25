@@ -12,6 +12,7 @@ void UFullMailWidget::NativeConstruct()
 
 	Btn_ReceiveMail->OnClicked.AddDynamic(this, &UFullMailWidget::ClickReceiveMailButton);
 	Btn_SendMail->OnClicked.AddDynamic(this, &UFullMailWidget::ClickSendMailButton);
+	Btn_DeleteMail->OnClicked.AddDynamic(this, &UFullMailWidget::ClickDeleteMailButton);
 }
 
 
@@ -23,4 +24,9 @@ void UFullMailWidget::ClickReceiveMailButton()
 void UFullMailWidget::ClickSendMailButton()
 {
 	WBP_MailListWidget->SetVisibility(ESlateVisibility::Hidden);
+}
+
+void UFullMailWidget::ClickDeleteMailButton()
+{
+	WBP_MailListWidget->RemoveCheckedMailToList();
 }

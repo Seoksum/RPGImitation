@@ -24,8 +24,10 @@ public:
 	void ClickReceiveMailButton();
 
 	UFUNCTION()
-		void ClickSendMailButton();
+	void ClickSendMailButton();
 
+	UFUNCTION()
+	void ClickDeleteMailButton();
 
 public:
 
@@ -37,5 +39,8 @@ public:
 
 	UPROPERTY(meta = (BindWidget))
 	class UMailListWidget* WBP_MailListWidget;
+
+	UPROPERTY(meta = (BindWidget))
+		class UButton* Btn_DeleteMail;
 
 };
