@@ -63,6 +63,10 @@ protected:
         int32 ColSize;
 
 
+    UPROPERTY(VisibleAnywhere)
+        bool IsButtonCreated = false;
+
+
 public:
 
     UPROPERTY()
@@ -75,9 +79,21 @@ public:
     class UDailyLoginRewardButtonWidget* ButtonWidget;
 
     // 위젯 클래스 참조
-    UPROPERTY(BlueprintReadWrite, Category = "HUDWidgets", Meta = (BlueprintProtected = true))
+    UPROPERTY(BlueprintReadWrite, Category = "UI", Meta = (BlueprintProtected = true))
     TSubclassOf<class UDailyLoginRewardButtonWidget> ButtonWidgetClass;
 
+    UPROPERTY(BlueprintReadOnly, Category = "Game")
     TArray<class UDailyLoginRewardButtonWidget*> ButtonWidgetArray;
+
+    UPROPERTY(BlueprintReadOnly, Category = "Game")
+    class UMyGameInstance* GameInstance;
+
+    FTimerHandle CheckLoginTimerHandle;
+
+    UPROPERTY(EditAnywhere,Category="Timer")
+    float LifeSpan;
+  
+
+    void SetActiveNextButton(int32 NextButtonIndex);
 
 };

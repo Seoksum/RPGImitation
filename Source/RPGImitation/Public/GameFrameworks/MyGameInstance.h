@@ -23,7 +23,7 @@ public:
 	virtual void Shutdown() override;
 
 	UFUNCTION(BlueprintCallable)
-	void CheckLoginDate();
+	bool CheckLoginDate();
 
 	void GetReward();
 
@@ -34,11 +34,13 @@ public:
 
 protected:
 
+	UPROPERTY(EditAnywhere, Category = "Time")
+		float UpdateTime;
+
 	UPROPERTY()
 	UDataTable* RewardDataTable;
 
 	FDateTime LastLoginDate;
-
 
 
 };

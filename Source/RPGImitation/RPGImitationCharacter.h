@@ -54,6 +54,9 @@ public:
 	UPROPERTY(VisibleAnywhere)
 	class UUIManager* UIManager;
 
+	class UUIManager* GetUIManager();
+
+
 
 public:
 

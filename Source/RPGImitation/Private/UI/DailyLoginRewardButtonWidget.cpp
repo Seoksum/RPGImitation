@@ -5,10 +5,13 @@
 #include "Components/Image.h"
 #include "Components/Button.h"
 #include "Components/TextBlock.h"
-#include "Blueprint/UserWidget.h"
+//#include "Blueprint/UserWidget.h"
 #include "GameFrameworks/LoginSaveGame.h"
 #include "Kismet/GameplayStatics.h"
 #include "UI/DailyLoginRewardWidget.h"
+#include "Items/MailData.h"
+#include "Managers/UIManager.h"
+#include "Characters/MyPlayerController.h"
 
 void UDailyLoginRewardButtonWidget::NativeConstruct()
 {
@@ -29,13 +32,17 @@ void UDailyLoginRewardButtonWidget::SetRewardInfo(int32 Day, FText ItemName, UTe
 void UDailyLoginRewardButtonWidget::OnClickAcceptButton()
 {
 	OnRewardButtonClicked.Broadcast(ButtonIndex);
-	UE_LOG(LogTemp, Log, TEXT("Button Index: %d"), ButtonIndex);
-	//ULoginSaveGame* LoadLoginSaveGame = Cast<ULoginSaveGame>(UGameplayStatics::LoadGameFromSlot(TEXT("MySaveSlot"), 0));
-	//if (LoadLoginSaveGame)
-	//{
-	//	int32 RewardDay = LoadLoginSaveGame->LastSelectedButtonIndex;
-	//	OnRewardButtonClicked.Broadcast(ButtonIndex);
-	//	UE_LOG(LogTemp, Log, TEXT("Button Index: %d"), ButtonIndex);
-	//	//UGameplayStatics::SaveGameToSlot(LoadLoginSaveGame, TEXT("MySaveSlot"), 0);		
-	//}
+
+	AMyPlayerController* PlayerController = Cast<AMyPlayerController>(UGameplayStatics::GetPlayerController(GetWorld(), 0));
+	if (PlayerController)
+	{
+		UUIManager* UIManager = PlayerController->UIManager;
+		if (UIManager)
+		{
+			UMailData* MailData = NewObject<UMailData>();
+			MailData->SetRewardEventMessage();
+			UIManager->AddMailToMailBox(MailData);
+		}
+	}
+
 }

@@ -46,8 +46,9 @@ void AMyPlayerController::EnableMyCheat()
     if (GEngine)
     {
         UMailData* MailData = NewObject<UMailData>();
-        MailData->Sender = "Server";
-        MailData->Message = "ABC";
+        MailData->Sender = "Cheat";
+        MailData->Title = "Cheat Title";
+        MailData->Message = "Test Message...";
 
         UIManager->AddMailToMailBox(MailData);
     }

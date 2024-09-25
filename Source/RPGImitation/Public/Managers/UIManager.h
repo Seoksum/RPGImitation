@@ -16,6 +16,7 @@ enum class EUIState : uint8
     UI_Inventory UMETA(DisplayName = "Inventory"),
     UI_SBInventory UMETA(DisplayName = "SB_Inventory"),
     UI_Mail UMETA(DisplayName = "Mail"),
+    UI_DailyReward UMETA(DisplayName = "DailyReward"),
     UI_None      UMETA(DisplayName = "None")
 };
 
@@ -29,36 +30,45 @@ public:
 
     UUIManager();
 
-    // 현재 UI 위젯
     UUserWidget* CurrentWidget;
 
-    // UI Enum
     EUIState CurrentUIState;
 
-    UPROPERTY(VisibleAnywhere, BlueprintReadOnly)
+
+protected: 
+
+    UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "UI")
     class UItemList* InventoryWidget;
 
-    UPROPERTY(VisibleAnywhere, BlueprintReadOnly)
+    UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "UI")
     class UScrollBoxInventoryWidget* SB_InventoryWidget;
 
-    UPROPERTY(VisibleAnywhere, BlueprintReadOnly)
+    UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "UI")
     class UMailListWidget* MailListWidget;
 
-    UPROPERTY(EditAnywhere, Category = "UI")
+    UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "UI")
         class UFullMailWidget* FullMailWidget;
 
-    // 위젯 클래스 참조
-    UPROPERTY(EditAnywhere, Category = "UI")
+    UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "UI")
+        class UDailyLoginRewardWidget* DailyRewardWidget;
+
+public:
+
+    // Widget Class 
+    UPROPERTY(EditAnywhere, Category = "Widget Class")
     TSubclassOf<class UItemList> InventoryWidgetClass;
 
-    UPROPERTY(EditAnywhere, Category = "UI")
+    UPROPERTY(EditAnywhere, Category = "Widget Class")
     TSubclassOf<class UScrollBoxInventoryWidget> SB_InventoryWidgetClass;
 
-    UPROPERTY(EditAnywhere, Category = "UI")
+    UPROPERTY(EditAnywhere, Category = "Widget Class")
     TSubclassOf<class UMailListWidget> MailListWidgetClass;
 
-    UPROPERTY(EditAnywhere, Category = "UI")
+    UPROPERTY(EditAnywhere, Category = "Widget Class")
     TSubclassOf<class UFullMailWidget> FullMailWidgetClass;
+
+    UPROPERTY(EditAnywhere, Category = "Widget Class")
+        TSubclassOf<class UDailyLoginRewardWidget> DailyRewardWidgetClass;
 
 
 

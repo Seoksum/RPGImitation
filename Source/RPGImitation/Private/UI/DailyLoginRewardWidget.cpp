@@ -20,39 +20,31 @@ void UDailyLoginRewardWidget::NativeConstruct()
 	RowSize = 4;
 	ColSize = 5;
 	ItemCount = 20;
+	LifeSpan = 5.f;
 
-	CreateRewardInfos();
-
-	InitGridPanel();
-
-	//SaveLoginSaveGame = Cast<ULoginSaveGame>(UGameplayStatics::CreateSaveGameObject(ULoginSaveGame::StaticClass()));
-	//if (SaveLoginSaveGame)
-	//{
-	//	//UGameplayStatics::SaveGameToSlot(SaveLoginSaveGame, TEXT("MySaveSlot"), 0);
-
-	//	int32 RewardDay = SaveLoginSaveGame->LastSelectedButtonIndex;
-	//	InitGridPanel();
-	//	//SetButtonClick(RewardDay);
-	//	UGameplayStatics::SaveGameToSlot(SaveLoginSaveGame, TEXT("MySaveSlot"), 0);
-	//}
+	if (!IsButtonCreated)
+	{
+		CreateRewardInfos();
+		InitGridPanel();
+		IsButtonCreated = true;
+	}
 }
 
 void UDailyLoginRewardWidget::NativeOnInitialized()
 {
 	Super::NativeOnInitialized();
 
-
 }
 
 void UDailyLoginRewardWidget::CreateRewardInfos()
 {
-	UMyGameInstance* GameInstance = Cast<UMyGameInstance>(UGameplayStatics::GetGameInstance(GetWorld()));
-	if (GameInstance)
+	UMyGameInstance* MyGameInstance = Cast<UMyGameInstance>(UGameplayStatics::GetGameInstance(GetWorld()));
+	if (MyGameInstance)
 	{
 		for (int32 i = 1; i <= ItemCount; i++)
 		{
 			FRewardInfo RewardInfo;
-			FRewardDataTable* DT_Reward = GameInstance->GetRewardDataTable(i);
+			FRewardDataTable* DT_Reward = MyGameInstance->GetRewardDataTable(i);
 			if (DT_Reward)
 			{
 				RewardInfo.Index = i;
@@ -79,6 +71,7 @@ void UDailyLoginRewardWidget::InitGridPanel()
 		LastButtonIndex = LoginSaveGame->LastSelectedButtonIndex;
 	}
 
+	ButtonWidgetArray.Add(nullptr);
 	for (const FRewardInfo& RewardInfo : RewardInfos)
 	{
 		if (ButtonWidgetClass != nullptr)
@@ -93,7 +86,6 @@ void UDailyLoginRewardWidget::InitGridPanel()
 
 				ButtonWidget->OnRewardButtonClicked.AddUObject(this, &UDailyLoginRewardWidget::OnClickButton);
 				ButtonWidgetArray.Add(ButtonWidget);
-				
 
 				if (Col >= ColSize)
 				{
@@ -103,6 +95,7 @@ void UDailyLoginRewardWidget::InitGridPanel()
 			}
 		}
 	}
+
 }
 
 void UDailyLoginRewardWidget::OnClickButton(int32 ButtonIndex)
@@ -110,20 +103,36 @@ void UDailyLoginRewardWidget::OnClickButton(int32 ButtonIndex)
 	if (ButtonWidgetArray.IsValidIndex(ButtonIndex))
 	{
 		ButtonWidgetArray[ButtonIndex]->SetIsEnabled(false);
-		UE_LOG(LogTemp, Log, TEXT("ButtonIndex : %d"), ButtonIndex);
 	}
 
-	int32 NextButtonIndex = ButtonIndex +1;// 다음 버튼을 활성화
-	if (ButtonWidgetArray.IsValidIndex(NextButtonIndex))
-	{
-		ButtonWidgetArray[NextButtonIndex]->SetIsEnabled(true);
-	}
-
+	int32 NextButtonIndex = (ButtonIndex + 1) % ItemCount;// 다음 버튼을 활성화
 	ULoginSaveGame* SaveGameInstance = Cast<ULoginSaveGame>(UGameplayStatics::CreateSaveGameObject(ULoginSaveGame::StaticClass()));
-	//ULoginSaveGame* SaveGameInstance = Cast<ULoginSaveGame>(UGameplayStatics::LoadGameFromSlot(TEXT("MySaveSlot"), 0));
 	if (SaveGameInstance)
 	{
 		SaveGameInstance->LastSelectedButtonIndex = NextButtonIndex;
 		UGameplayStatics::SaveGameToSlot(SaveGameInstance, TEXT("MySaveSlot"), 0);
+	}
+
+	GameInstance = Cast< UMyGameInstance>(UGameplayStatics::GetGameInstance(GetWorld()));
+	if (GameInstance)
+	{
+		GameInstance->SaveLastLoginTime();
+		if (!GameInstance->CheckLoginDate())
+		{
+			GetWorld()->GetTimerManager().SetTimer(CheckLoginTimerHandle, FTimerDelegate::CreateLambda([this, NextButtonIndex] {
+				GameInstance->CheckLoginDate();
+				SetActiveNextButton(NextButtonIndex);
+				}), LifeSpan, false);
+			return;
+		}
+	}
+	SetActiveNextButton(NextButtonIndex);
+}
+
+void UDailyLoginRewardWidget::SetActiveNextButton(int32 NextButtonIndex)
+{
+	if (ButtonWidgetArray.IsValidIndex(NextButtonIndex))
+	{
+		ButtonWidgetArray[NextButtonIndex]->SetIsEnabled(true);
 	}
 }

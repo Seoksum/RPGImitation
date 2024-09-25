@@ -4,13 +4,19 @@
 #include "UI/MailWidget.h"
 #include "Items/MailData.h"
 #include "Components/TextBlock.h"
+#include "Components/Button.h"
+#include "UI/ReceivePostalWidget.h"
 
+void UMailWidget::NativeConstruct()
+{
+	Super::NativeConstruct();
+
+	Btn_MailMessage->OnClicked.AddDynamic(this, &UMailWidget::OnClickMailMessage);
+}
 
 void UMailWidget::NativeOnListItemObjectSet(UObject* ListItemObject)
 {
 	IUserObjectListEntry::NativeOnListItemObjectSet(ListItemObject);
-
-	UE_LOG(LogTemp, Log, TEXT("NativeOnListItemObjectSet"));
 
 	UMailData* Mail = Cast<UMailData>(ListItemObject);
 	if (Mail == nullptr)	return;
@@ -21,10 +27,17 @@ void UMailWidget::NativeOnListItemObjectSet(UObject* ListItemObject)
 
 void UMailWidget::SetMailInfo(UMailData* InMail)
 {
-	if (nullptr == InMail) return;
+	ReceiveMail = InMail;
+	T_Sender->SetText(FText::FromString(ReceiveMail->Sender));
+	T_Title->SetText(FText::FromString(ReceiveMail->Title));
+}
 
-	UE_LOG(LogTemp, Log, TEXT("SetMailInfo Success"));
-
-	TextFrom->SetText(FText::FromString(InMail->Sender));
-	TextContents->SetText(FText::FromString(InMail->Message));
+void UMailWidget::OnClickMailMessage()
+{
+	UReceivePostalWidget* ReceivePostalWidget = CreateWidget< UReceivePostalWidget>(GetWorld(), ReceivePostalWidgetClass);
+	if (ReceivePostalWidget && !ReceivePostalWidget->IsInViewport())
+	{
+		ReceivePostalWidget->AddToViewport();
+		ReceivePostalWidget->SetMail(ReceiveMail);
+	}
 }

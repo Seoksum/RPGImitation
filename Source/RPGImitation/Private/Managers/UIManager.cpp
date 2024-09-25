@@ -7,6 +7,7 @@
 #include "UI/ScrollBoxInventoryWidget.h"
 #include "UI/MailListWidget.h"
 #include "UI/FullMailWidget.h"
+#include "UI/DailyLoginRewardWidget.h"
 
 
 UUIManager::UUIManager()
@@ -42,9 +43,22 @@ UUIManager::UUIManager()
 		{
 			MailListWidget = FullMailWidget->WBP_MailListWidget;
 		}
+	}
 
+	static ConstructorHelpers::FClassFinder<UUserWidget> DailyRewardWidgetClassRef(TEXT("WidgetBlueprint'/Game/Contents/UI/Rewards/WBP_DailyLoginReward.WBP_DailyLoginReward_C'"));
+	if (DailyRewardWidgetClassRef.Succeeded())
+	{
+		DailyRewardWidgetClass = DailyRewardWidgetClassRef.Class;
+		DailyRewardWidget = CreateWidget<UDailyLoginRewardWidget>(GetWorld(), DailyRewardWidgetClass);
+		//if (DailyRewardWidget)
+		//{
+		//	DailyRewardWidget->CreateRewardInfos();
+		//	DailyRewardWidget->InitGridPanel();
+		//	UE_LOG(LogTemp, Log, TEXT("[Daily] Init Daily Widget"));
+		//}
 
 	}
+
 
 }
 
@@ -94,41 +108,28 @@ void UUIManager::UpdateUIState(EUIState NewState, bool IsActive)
 {
 	if (NewState == EUIState::UI_Inventory)
 	{
-		if (IsActive)
-		{
-			InventoryWidget->AddToViewport();
-		}
-		else
-		{
-			InventoryWidget->RemoveFromViewport();
-		}
+		if (IsActive) { InventoryWidget->AddToViewport(); }
+		else { InventoryWidget->RemoveFromViewport(); }
 	}
 
 	else if (NewState == EUIState::UI_SBInventory)
 	{
-		if (IsActive)
-		{
-			SB_InventoryWidget->AddToViewport();
-		}
-		else
-		{
-			SB_InventoryWidget->RemoveFromViewport();
-		}
+		if (IsActive) { SB_InventoryWidget->AddToViewport(); }
+		else { SB_InventoryWidget->RemoveFromViewport(); }
 	}
 
 	else if (NewState == EUIState::UI_Mail)
 	{
-		if (IsActive)
-		{
-			FullMailWidget->AddToViewport();
-			//MailListWidget->AddToViewport();
-		}
-		else
-		{
-			FullMailWidget->RemoveFromViewport();
-			//MailListWidget->RemoveFromViewport();
-		}
+		if (IsActive) { FullMailWidget->AddToViewport(); }
+		else { FullMailWidget->RemoveFromViewport(); }
 	}
+
+	else if (NewState == EUIState::UI_DailyReward)
+	{
+		if (IsActive) { DailyRewardWidget->AddToViewport(); }
+		else { DailyRewardWidget->RemoveFromViewport(); }
+	}
+
 }
 
 EUIState UUIManager::GetCurrentUIState()

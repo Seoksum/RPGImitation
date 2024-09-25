@@ -17,23 +17,39 @@ class RPGIMITATION_API UMailWidget : public UUserWidget, public IUserObjectListE
 
 protected:
 
+	virtual void NativeConstruct() override;
+
 	virtual void NativeOnListItemObjectSet(UObject* ListItemObject) override;
 
 public:
 
 	void SetMailInfo(class UMailData* InMail);
 
+	UFUNCTION()
+	void OnClickMailMessage();
+
 public:
 
 	UPROPERTY(meta = (BindWidget))
-	class UTextBlock* TextFrom;
+		class UButton* Btn_MailMessage;
 
 	UPROPERTY(meta = (BindWidget))
-	class UTextBlock* TextContents;
+	class UTextBlock* T_Sender;
+
+	UPROPERTY(meta = (BindWidget))
+	class UTextBlock* T_Title;
 
 	UPROPERTY(meta = (BindWidget))
 	class UTextBlock* TextDay;
 
+	UPROPERTY(BlueprintReadOnly)
+	class UMailData* ReceiveMail;
+
+protected:
+
+	// 위젯 클래스 참조
+	UPROPERTY(BlueprintReadWrite, Category = "UI", Meta = (BlueprintProtected = true))
+	TSubclassOf<class UReceivePostalWidget> ReceivePostalWidgetClass;
 
 
 };

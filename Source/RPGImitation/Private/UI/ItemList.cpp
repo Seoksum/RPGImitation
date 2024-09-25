@@ -25,6 +25,7 @@ void UItemList::AddItemToList(class AItem* InItem)
 		NewItemWidgetData->Thumbnail = InItem->Thumbnail;
 
 		NearbyItemList->AddItem(NewItemWidgetData);
+		NearbyItemList->ScrollToBottom();
 		NearbyItemList->RequestRefresh();
 	}
 

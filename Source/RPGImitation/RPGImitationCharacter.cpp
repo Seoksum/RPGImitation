@@ -113,6 +113,12 @@ void ARPGImitationCharacter::MoveRight(float Value)
 	}
 }
 
+UUIManager* ARPGImitationCharacter::GetUIManager()
+{
+	if(UIManager) return UIManager;
+	return nullptr;
+}
+
 void ARPGImitationCharacter::OnItemAcquired(class AItem* InItem)
 {
 	if (InItem)
@@ -139,8 +145,7 @@ void ARPGImitationCharacter::SB_OnItemAcquired(class AItem* InItem)
 			UIManager = PlayerController->UIManager;
 			if (UIManager)
 			{
-				UIManager->SB_AddItemToInventory(InItem);
-				
+				UIManager->SB_AddItemToInventory(InItem);				
 			}
 		}
 	}

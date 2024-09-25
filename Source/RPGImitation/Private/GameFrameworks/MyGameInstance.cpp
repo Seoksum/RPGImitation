@@ -16,6 +16,7 @@ UMyGameInstance::UMyGameInstance()
 		RewardDataTable = RewardDataPathObject.Object;
 	}
 
+	UpdateTime = 5.f;
 }
 
 void UMyGameInstance::Init()
@@ -36,17 +37,18 @@ void UMyGameInstance::Shutdown()
 	SaveLastLoginTime();
 }
 
-void UMyGameInstance::CheckLoginDate()
+bool UMyGameInstance::CheckLoginDate()
 {
 	FDateTime CurrentDate = FDateTime::Now();
 	
 	FTimespan TimeDiff = CurrentDate - LastLoginDate;
-	if (TimeDiff.GetTotalSeconds() >= 10.f)
+	if (TimeDiff.GetTotalSeconds() >= UpdateTime)
 	{
 		GetReward(); // 보상
 		SaveLastLoginTime(); // LastLoginDate 갱신
+		return true;
 	}
-
+	return false;
 }
 
 void UMyGameInstance::GetReward()

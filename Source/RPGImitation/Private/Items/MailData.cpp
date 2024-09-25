@@ -3,3 +3,8 @@
 
 #include "Items/MailData.h"
 
+void UMailData::SetRewardEventMessage()
+{
+	Sender = "System";
+	Title = "Attendance Event Reward !! ";
+}
