@@ -17,10 +17,17 @@ void UMailListWidget::AddMailToList(class UMailData* InMailData)
 {
 	if (!MailListView) return;
 
-	UMailData* MailData = NewObject<UMailData>(this);
-
+    InMailData->OwningMailListWidget = this;
 	MailListView->AddItem(InMailData);
 	MailListView->RequestRefresh();
+}
+
+void UMailListWidget::RemoveMailToList(class UMailData* InMailData)
+{
+    if (!MailListView) return;
+
+    MailListView->RemoveItem(InMailData);
+    MailListView->RequestRefresh();
 }
 
 void UMailListWidget::RemoveCheckedMailToList()
@@ -36,5 +43,16 @@ void UMailListWidget::RemoveCheckedMailToList()
             MailListView->RemoveItem(MyMailWidget->GetListItem());
             MailListView->RequestRefresh();
         }
+    }
+}
+
+void UMailListWidget::CheckAllMail(bool IsChecked)
+{
+    TArray<UUserWidget*> DisplayedWidgets = MailListView->GetDisplayedEntryWidgets();
+
+    for (UUserWidget* Widget : DisplayedWidgets)
+    {
+        UMailWidget* MyMailWidget = Cast<UMailWidget>(Widget);
+        MyMailWidget->CB_MailSelected->SetIsChecked(IsChecked);
     }
 }

@@ -4,24 +4,24 @@
 
 #include "CoreMinimal.h"
 #include "Blueprint/UserWidget.h"
-#include "MailListWidget.generated.h"
+#include "SendMailListWidget.generated.h"
 
 /**
  * 
  */
 UCLASS()
-class RPGIMITATION_API UMailListWidget : public UUserWidget
+class RPGIMITATION_API USendMailListWidget : public UUserWidget
 {
 	GENERATED_BODY()
-	
+
 public:
+
 	virtual void NativeConstruct() override;
 
 	void AddMailToList(class UMailData* InMailData);
-	void RemoveMailToList(class UMailData* InMailData);
 
 	UFUNCTION(BlueprintCallable)
-	void RemoveCheckedMailToList();
+		void RemoveCheckedMailToList();
 
 	void CheckAllMail(bool IsChecked);
 
@@ -29,13 +29,12 @@ public:
 protected:
 
 	UPROPERTY(meta = (BindWidget))
-	class UListView* MailListView;
+		class UListView* SendMailListView;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "HUD")
-	TSubclassOf<class UMailWidget> MailWidgetClass;
+		TSubclassOf<class USendMailWidget> SendMailWidgetClass;
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "HUD")
-	class UMailWidget* MailWidget;
-
-
+		class USendMailWidget* SendMailWidget;
+	
 };

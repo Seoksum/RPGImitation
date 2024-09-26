@@ -50,7 +50,11 @@ void AMyPlayerController::EnableMyCheat()
         MailData->Title = "Cheat Title";
         MailData->Message = "Test Message...";
 
-        UIManager->AddMailToMailBox(MailData);
+        UIManager->AddMailReceiveToMailBox(MailData);
+        if (GEngine)
+        {
+            GEngine->Exec(GetWorld(), TEXT("MyCheat"));
+        }
     }
 }
 

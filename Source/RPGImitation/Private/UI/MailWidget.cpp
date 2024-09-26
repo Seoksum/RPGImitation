@@ -6,14 +6,19 @@
 #include "Components/TextBlock.h"
 #include "Components/Button.h"
 #include "Components/CheckBox.h"
+#include "Components/CanvasPanel.h"
+#include "Components/Image.h"
 #include "UI/ReceivePostalWidget.h"
+#include "UI/MailListWidget.h"
 
 void UMailWidget::NativeConstruct()
 {
 	Super::NativeConstruct();
 
 	Btn_MailMessage->OnClicked.AddDynamic(this, &UMailWidget::OnClickMailMessage);
+	Btn_ReceiveItem->OnClicked.AddDynamic(this, &UMailWidget::OnClickReceiveItemButton);
 	IsInViewportNow = false;
+
 }
 
 void UMailWidget::NativeOnListItemObjectSet(UObject* ListItemObject)
@@ -33,6 +38,11 @@ void UMailWidget::SetMailInfo(UMailData* InMail)
 	ReceiveMail = InMail;
 	T_Sender->SetText(FText::FromString(ReceiveMail->Sender));
 	T_Title->SetText(FText::FromString(ReceiveMail->Title));
+	CP_Item->SetVisibility(ReceiveMail->IsInventoryItem ? ESlateVisibility::Visible : ESlateVisibility::Hidden);
+	if (ReceiveMail->IsInventoryItem)
+	{
+		Img_Item->SetBrushFromTexture(ReceiveMail->ItemImage);
+	}
 }
 
 void UMailWidget::OnClickMailMessage()
@@ -44,5 +54,14 @@ void UMailWidget::OnClickMailMessage()
 		ReceivePostalWidget->SetMail(ReceiveMail);
 		ReceivePostalWidget->ParentWidget = this;
 		IsInViewportNow = true;
+	}
+}
+
+void UMailWidget::OnClickReceiveItemButton()
+{
+	UMailListWidget* MailListWidget=  ReceiveMail->OwningMailListWidget;
+	if (MailListWidget)
+	{
+		MailListWidget->RemoveMailToList(ReceiveMail);
 	}
 }

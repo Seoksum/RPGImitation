@@ -78,7 +78,7 @@ void FUDPReceiveRunnable::ReceiveData()
                                 MailData->Sender = "Server";
                                 MailData->Title = ReceivedString;
 
-                                UIManager->AddMailToMailBox(MailData);
+                                UIManager->AddMailReceiveToMailBox(MailData);
                                 
                             }
                         }

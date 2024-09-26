@@ -79,7 +79,7 @@ void UDailyLoginRewardWidget::InitGridPanel()
 			ButtonWidget = CreateWidget<UDailyLoginRewardButtonWidget>(GetWorld(), ButtonWidgetClass);
 			if (ButtonWidget)
 			{
-				ButtonWidget->SetRewardInfo(RewardInfo.Day, FText::FromString(RewardInfo.ItemName), RewardInfo.ItemThumbnail);
+				ButtonWidget->SetRewardInfo(RewardInfo);
 				ButtonWidget->ButtonIndex = RewardInfo.Index;
 				ButtonWidget->SetIsEnabled(RewardInfo.Index == LastButtonIndex);
 				GP_Reward->AddChildToGrid(ButtonWidget, Row, Col++);

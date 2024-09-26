@@ -29,10 +29,13 @@ public:
 	UFUNCTION()
 	void ClickDeleteMailButton();
 
+	UFUNCTION()
+	void ChangeAllMailCheckBox(bool IsChecked);
+
 public:
 
 	UPROPERTY(meta = (BindWidget))
-		class UButton* Btn_ReceiveMail;
+	class UButton* Btn_ReceiveMail;
 
 	UPROPERTY(meta = (BindWidget))
 	class UButton* Btn_SendMail;
@@ -41,6 +44,16 @@ public:
 	class UMailListWidget* WBP_MailListWidget;
 
 	UPROPERTY(meta = (BindWidget))
-		class UButton* Btn_DeleteMail;
+	class USendMailListWidget* WBP_SendMailListWidget;
+
+	UPROPERTY(meta = (BindWidget))
+	class UButton* Btn_DeleteMail;
+
+	UPROPERTY(meta = (BindWidget))
+	class UCheckBox* CB_CheckAllMail;
+
+	UPROPERTY(BlueprintReadWrite,meta = (BindWidget))
+		class UWidgetSwitcher* WS_Mail;
+
 
 };

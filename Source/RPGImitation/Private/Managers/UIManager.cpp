@@ -6,6 +6,7 @@
 #include "UI/ItemList.h"
 #include "UI/ScrollBoxInventoryWidget.h"
 #include "UI/MailListWidget.h"
+#include "UI/SendMailListWidget.h"
 #include "UI/FullMailWidget.h"
 #include "UI/DailyLoginRewardWidget.h"
 
@@ -42,6 +43,7 @@ UUIManager::UUIManager()
 		if (FullMailWidget && FullMailWidget->WBP_MailListWidget)
 		{
 			MailListWidget = FullMailWidget->WBP_MailListWidget;
+			SendMailListWidget = FullMailWidget->WBP_SendMailListWidget;
 		}
 	}
 
@@ -50,13 +52,6 @@ UUIManager::UUIManager()
 	{
 		DailyRewardWidgetClass = DailyRewardWidgetClassRef.Class;
 		DailyRewardWidget = CreateWidget<UDailyLoginRewardWidget>(GetWorld(), DailyRewardWidgetClass);
-		//if (DailyRewardWidget)
-		//{
-		//	DailyRewardWidget->CreateRewardInfos();
-		//	DailyRewardWidget->InitGridPanel();
-		//	UE_LOG(LogTemp, Log, TEXT("[Daily] Init Daily Widget"));
-		//}
-
 	}
 
 
@@ -126,8 +121,15 @@ void UUIManager::UpdateUIState(EUIState NewState, bool IsActive)
 
 	else if (NewState == EUIState::UI_DailyReward)
 	{
-		if (IsActive) { DailyRewardWidget->AddToViewport(); }
-		else { DailyRewardWidget->RemoveFromViewport(); }
+		if (IsActive) 
+		{
+			//DailyRewardWidget = CreateWidget<UDailyLoginRewardWidget>(GetWorld(), DailyRewardWidgetClass);
+			DailyRewardWidget->AddToViewport();
+		}
+		else 
+		{ 
+			DailyRewardWidget->RemoveFromRoot();
+		}
 	}
 
 }
@@ -153,11 +155,19 @@ void UUIManager::SB_AddItemToInventory(class AItem* InItem)
 	}
 }
 
-void UUIManager::AddMailToMailBox(class UMailData* InMailData)
+void UUIManager::AddMailReceiveToMailBox(class UMailData* InMailData)
 {
 	if (MailListWidget)
 	{
 		MailListWidget->AddMailToList(InMailData);
+	}
+}
+
+void UUIManager::AddMailToSendMailBox(class UMailData* InMailData)
+{
+	if (SendMailListWidget)
+	{
+		SendMailListWidget->AddMailToList(InMailData);
 	}
 }
 

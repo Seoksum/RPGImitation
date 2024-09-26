@@ -5,7 +5,6 @@
 #include "Components/Image.h"
 #include "Components/Button.h"
 #include "Components/TextBlock.h"
-//#include "Blueprint/UserWidget.h"
 #include "GameFrameworks/LoginSaveGame.h"
 #include "Kismet/GameplayStatics.h"
 #include "UI/DailyLoginRewardWidget.h"
@@ -20,13 +19,14 @@ void UDailyLoginRewardButtonWidget::NativeConstruct()
 	Btn_AcceptItem->OnClicked.AddDynamic(this, &UDailyLoginRewardButtonWidget::OnClickAcceptButton);
 }
 
-void UDailyLoginRewardButtonWidget::SetRewardInfo(int32 Day, FText ItemName, UTexture2D* ItemThumbnail)
+void UDailyLoginRewardButtonWidget::SetRewardInfo(FRewardInfo InRewardInfo)
 {
-	FString DayString = FString::FromInt(Day);
+	RewardInfo = InRewardInfo;
+	FString DayString = FString::FromInt(RewardInfo.Day);
 	FText DayText = FText::FromString(DayString);
 	T_Day->SetText(DayText);
-	T_ItemName->SetText(ItemName);
-	Img_ItemThumbnail->SetBrushFromTexture(ItemThumbnail);
+	T_ItemName->SetText(FText::FromString(RewardInfo.ItemName));
+	Img_ItemThumbnail->SetBrushFromTexture(RewardInfo.ItemThumbnail);
 }
 
 void UDailyLoginRewardButtonWidget::OnClickAcceptButton()
@@ -41,7 +41,9 @@ void UDailyLoginRewardButtonWidget::OnClickAcceptButton()
 		{
 			UMailData* MailData = NewObject<UMailData>();
 			MailData->SetRewardEventMessage();
-			UIManager->AddMailToMailBox(MailData);
+			MailData->IsInventoryItem = true;
+			MailData->ItemImage = RewardInfo.ItemThumbnail;
+			UIManager->AddMailReceiveToMailBox(MailData);
 		}
 	}
 

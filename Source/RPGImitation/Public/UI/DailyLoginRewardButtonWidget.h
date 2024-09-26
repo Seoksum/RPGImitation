@@ -4,6 +4,7 @@
 
 #include "CoreMinimal.h"
 #include "Blueprint/UserWidget.h"
+#include "UI/DailyLoginRewardWidget.h"
 #include "DailyLoginRewardButtonWidget.generated.h"
 
 /**
@@ -21,7 +22,7 @@ public:
 
 	virtual void NativeConstruct() override;
 
-	void SetRewardInfo(int32 Day, FText ItemName, UTexture2D* ItemThumbnail);
+	void SetRewardInfo(FRewardInfo InRewardInfo);
 
 	FOnRewardButtonClicked OnRewardButtonClicked;
 
@@ -31,6 +32,7 @@ protected:
 	UFUNCTION()
 	void OnClickAcceptButton();
 
+	FRewardInfo RewardInfo;
 
 
 public:

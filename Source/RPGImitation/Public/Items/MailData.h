@@ -26,13 +26,25 @@ class RPGIMITATION_API UMailData : public UObject
 public:
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "MailData")
-		FString Sender;
+	FString Sender;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "MailData")
-		FString Title;
+	FString Title;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "MailData")
-		FString Message;
+	FString Message;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "MailData")
+	FString Receiver;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "MailData")
+	bool IsInventoryItem;
+
+	UPROPERTY(meta = (BindWidget))
+	class UTexture2D* ItemImage;
+
+	UPROPERTY()
+	class UMailListWidget* OwningMailListWidget;
 
 
 	void SetRewardEventMessage();

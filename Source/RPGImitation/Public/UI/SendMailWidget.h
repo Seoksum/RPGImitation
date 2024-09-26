@@ -5,13 +5,13 @@
 #include "CoreMinimal.h"
 #include "Blueprint/UserWidget.h"
 #include "Blueprint/IUserObjectListEntry.h"
-#include "MailWidget.generated.h"
+#include "SendMailWidget.generated.h"
 
 /**
  * 
  */
 UCLASS()
-class RPGIMITATION_API UMailWidget : public UUserWidget, public IUserObjectListEntry
+class RPGIMITATION_API USendMailWidget : public UUserWidget, public IUserObjectListEntry
 {
 	GENERATED_BODY()
 
@@ -28,16 +28,12 @@ public:
 	UFUNCTION()
 	void OnClickMailMessage();
 
-	UFUNCTION()
-	void OnClickReceiveItemButton();
-
 	FORCEINLINE void SetIsInViewportNow(bool InViewport) { IsInViewportNow = InViewport; }
-	FORCEINLINE void SetIsInventoryItem(bool bIsInventoryItem) { IsInventoryItem = bIsInventoryItem; }
 
 public:
 
 	UPROPERTY(meta = (BindWidget))
-		class UButton* Btn_MailMessage;
+	class UButton* Btn_MailMessage;
 
 	UPROPERTY(meta = (BindWidget))
 	class UTextBlock* T_Sender;
@@ -46,34 +42,23 @@ public:
 	class UTextBlock* T_Title;
 
 	UPROPERTY(meta = (BindWidget))
-	class UTextBlock* TextDay;
-
-	UPROPERTY(meta = (BindWidget))
 	class UCheckBox* CB_MailSelected;
 
-	UPROPERTY(meta = (BindWidget))
-	class UCanvasPanel* CP_Item;
 
-	UPROPERTY(meta = (BindWidget))
-	class UImage* Img_Item;
-
-	UPROPERTY(meta = (BindWidget))
-		class UButton* Btn_ReceiveItem;
 
 protected:
 
 	// 위젯 클래스 참조
 	UPROPERTY(BlueprintReadWrite, Category = "UI", Meta = (BlueprintProtected = true))
-	TSubclassOf<class UReceivePostalWidget> ReceivePostalWidgetClass;
+	TSubclassOf<class USentPostalWidget> SentPostalWidgetClass;
 
 	UPROPERTY(BlueprintReadOnly)
-	class UMailData* ReceiveMail;
+	class UMailData* SendMail;
 
 	UPROPERTY(BlueprintReadOnly)
 	bool IsInViewportNow;
 
-	UPROPERTY(BlueprintReadWrite,EditAnywhere)
+	UPROPERTY(BlueprintReadWrite)
 	bool IsInventoryItem;
-
 
 };

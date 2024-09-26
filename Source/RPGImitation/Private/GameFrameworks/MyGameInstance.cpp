@@ -60,8 +60,7 @@ void UMyGameInstance::LoadLastLoginTime()
 {
 	ULoginSaveGame* LoginSaveGame = Cast<ULoginSaveGame>(UGameplayStatics::LoadGameFromSlot(TEXT("LoginSaveSlot"), 0));
 	if (LoginSaveGame)
-	{
-		LastLoginDate = LoginSaveGame->LastLoginTime;
+	{		LastLoginDate = LoginSaveGame->LastLoginTime;
 	}
 }
 

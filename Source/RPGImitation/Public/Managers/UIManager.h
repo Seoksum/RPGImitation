@@ -47,6 +47,9 @@ protected:
     class UMailListWidget* MailListWidget;
 
     UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "UI")
+        class USendMailListWidget* SendMailListWidget;
+
+    UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "UI")
         class UFullMailWidget* FullMailWidget;
 
     UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "UI")
@@ -87,7 +90,8 @@ public:
 
     void AddItemToInventory(class AItem* InItem);
     void SB_AddItemToInventory(class AItem* InItem);
-    void AddMailToMailBox(class UMailData* InMailData);
+    void AddMailReceiveToMailBox(class UMailData* InMailData);
+    void AddMailToSendMailBox(class UMailData* InMailData);
 
 
 };
