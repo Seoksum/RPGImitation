@@ -17,6 +17,12 @@ void USendPostalWidget::NativeConstruct()
 {
 	Super::NativeConstruct();
 
+	//Btn_Send->OnClicked.AddDynamic(this, &USendPostalWidget::OnClickSendButton);
+
+	if (Btn_Send->OnClicked.IsAlreadyBound(this, &USendPostalWidget::OnClickSendButton))
+	{
+		Btn_Send->OnClicked.RemoveDynamic(this, &USendPostalWidget::OnClickSendButton);
+	}
 	Btn_Send->OnClicked.AddDynamic(this, &USendPostalWidget::OnClickSendButton);
 }
 

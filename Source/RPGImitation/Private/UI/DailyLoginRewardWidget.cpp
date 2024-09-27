@@ -33,8 +33,18 @@ void UDailyLoginRewardWidget::NativeConstruct()
 void UDailyLoginRewardWidget::NativeOnInitialized()
 {
 	Super::NativeOnInitialized();
+	if (ButtonWidget->OnRewardButtonClicked.IsBound())
+	{
+		ButtonWidget->OnRewardButtonClicked.RemoveAll(this);
+	}
+}
+
+void UDailyLoginRewardWidget::NativeDestruct()
+{
+	Super::NativeDestruct();
 
 }
+
 
 void UDailyLoginRewardWidget::CreateRewardInfos()
 {

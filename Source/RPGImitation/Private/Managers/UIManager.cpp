@@ -128,7 +128,7 @@ void UUIManager::UpdateUIState(EUIState NewState, bool IsActive)
 		}
 		else 
 		{ 
-			DailyRewardWidget->RemoveFromRoot();
+			DailyRewardWidget->RemoveFromViewport();
 		}
 	}
 

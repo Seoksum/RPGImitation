@@ -16,6 +16,13 @@ void UDailyLoginRewardButtonWidget::NativeConstruct()
 {
 	Super::NativeConstruct();
 
+	// 출석아이콘 3번 누르고 수령 누르면 메일도 3개가 옴 
+	// => 출석체크아이콘 클릭시 계속 UDailyLoginRewardWidget이 나오는데 클릭 할 때마다 출석체크일수도 올라가는 걸 방지
+	// 메일도 그만큼 옴
+	if (Btn_AcceptItem->OnClicked.IsAlreadyBound(this, &UDailyLoginRewardButtonWidget::OnClickAcceptButton))
+	{
+		Btn_AcceptItem->OnClicked.RemoveDynamic(this, &UDailyLoginRewardButtonWidget::OnClickAcceptButton);
+	}
 	Btn_AcceptItem->OnClicked.AddDynamic(this, &UDailyLoginRewardButtonWidget::OnClickAcceptButton);
 }
 
