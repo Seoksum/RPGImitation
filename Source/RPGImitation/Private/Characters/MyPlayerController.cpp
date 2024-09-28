@@ -4,24 +4,39 @@
 #include "Characters/MyPlayerController.h"
 #include "Managers/UIManager.h"
 #include "Items/MailData.h"
+#include "Managers/ChatSystem.h"
+#include "EngineUtils.h"
+#include "Kismet/GameplayStatics.h"
 
 AMyPlayerController::AMyPlayerController()
-{
+{   
     UIManager = CreateDefaultSubobject<UUIManager>(TEXT("UIManger"));
+    RootComponent = CreateDefaultSubobject<USceneComponent>(TEXT("RootComponent"));
 
-}
-
-UUIManager* AMyPlayerController::GetUIManager()
-{
-    if(UIManager!=nullptr) return UIManager;
-    return nullptr;
+    bReplicates = true;
+    bAlwaysRelevant = true;
 }
 
 void AMyPlayerController::BeginPlay()
 {
     Super::BeginPlay();
 
+    InitChatSystem();
+}
 
+void AMyPlayerController::InitChatSystem()
+{
+    if (HasAuthority())  // 서버에서만 ChatSystem을 생성
+    {
+        ChatSystem = GetWorld()->SpawnActor<AChatSystem>();
+        ChatSystem->SetOwningOwner(GetPawn());
+        ChatSystem->SetOwner(GetPawn());
+
+        if (nullptr != GetPawn())
+        {
+            UE_LOG(LogTemp, Warning, TEXT("ChatSystem owner is set to Pawn: %s"), *GetPawn()->GetName());
+        }
+    }
 }
 
 void AMyPlayerController::SetupInputComponent()
@@ -96,4 +111,23 @@ void AMyPlayerController::SBToggleInventory()
         UIManager->UpdateUIState(EUIState::UI_SBInventory, SBIsInventoryActived);
         bShowMouseCursor = SBIsInventoryActived;
     }
+}
+
+UUIManager* AMyPlayerController::GetUIManager()
+{
+    if (UIManager != nullptr) return UIManager;
+    return nullptr;
+}
+
+AChatSystem* AMyPlayerController::GetChatSystem()
+{
+    if (ChatSystem != nullptr) return ChatSystem;
+
+    for (TActorIterator<AChatSystem> It(GetWorld()); It; ++It)
+    {
+        ChatSystem = *It;
+        break;
+    }
+
+    return ChatSystem;
 }

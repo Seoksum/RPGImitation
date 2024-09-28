@@ -27,7 +27,7 @@ void AUDPClient::BeginPlay()
     AMyPlayerController* PlayerController = Cast<AMyPlayerController>(UGameplayStatics::GetPlayerController(GetWorld(), 0));
     if (PlayerController)
     {
-        UIManager = PlayerController->UIManager;
+        UIManager = PlayerController->GetUIManager();
     }
 
     CreateSocket();

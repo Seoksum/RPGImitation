@@ -20,12 +20,11 @@ public:
 
     AMyPlayerController();
 
-    // UIManager 인스턴스를 관리할 변수
-    UPROPERTY(BlueprintReadWrite)
-    class UUIManager* UIManager;
-
     UFUNCTION(BlueprintCallable)
         UUIManager* GetUIManager();
+
+    UFUNCTION(BlueprintCallable)
+        class AChatSystem* GetChatSystem();
 
 protected:
 
@@ -40,7 +39,15 @@ protected:
 
     void EnableMyCheat();
 
+    void InitChatSystem();
+
 private:
+
+    UPROPERTY()
+        class UUIManager* UIManager;
+
+    UPROPERTY()
+        class AChatSystem* ChatSystem;
 
     UPROPERTY(VisibleAnywhere)
         bool IsInventoryActived;

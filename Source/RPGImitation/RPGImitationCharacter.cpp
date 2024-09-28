@@ -126,7 +126,7 @@ void ARPGImitationCharacter::OnItemAcquired(class AItem* InItem)
 		AMyPlayerController* PlayerController = Cast<AMyPlayerController>(UGameplayStatics::GetPlayerController(GetWorld(), 0));
 		if (PlayerController)
 		{
-			UIManager = PlayerController->UIManager;
+			UIManager = PlayerController->GetUIManager();
 			if (UIManager)
 			{
 				UIManager->AddItemToInventory(InItem);
@@ -142,7 +142,7 @@ void ARPGImitationCharacter::SB_OnItemAcquired(class AItem* InItem)
 		AMyPlayerController* PlayerController = Cast<AMyPlayerController>(UGameplayStatics::GetPlayerController(GetWorld(), 0));
 		if (PlayerController)
 		{
-			UIManager = PlayerController->UIManager;
+			UIManager = PlayerController->GetUIManager();
 			if (UIManager)
 			{
 				UIManager->SB_AddItemToInventory(InItem);				

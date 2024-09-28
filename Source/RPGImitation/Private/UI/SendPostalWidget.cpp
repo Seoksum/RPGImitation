@@ -35,7 +35,7 @@ void USendPostalWidget::OnClickSendButton()
 	MailData->Message = ET_Contents->GetText().ToString();
 
 	AMyPlayerController* PlayerController = Cast<AMyPlayerController>(UGameplayStatics::GetPlayerController(GetWorld(), 0));
-	UUIManager* UIManager = PlayerController->UIManager;
+	UUIManager* UIManager = PlayerController->GetUIManager();
 	if (UIManager)
 	{
 		UIManager->AddMailToSendMailBox(MailData);
