@@ -41,6 +41,15 @@ protected:
 
     void InitChatSystem();
 
+public:
+
+    UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "UI")
+        class UChatWidget* ChatWidget;
+
+    UPROPERTY(EditAnywhere, Category = "Widget Class")
+        TSubclassOf<class UChatWidget> ChatWidgetClass;
+
+
 private:
 
     UPROPERTY()

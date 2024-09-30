@@ -8,6 +8,8 @@
 #include "Components/ScrollBox.h"
 #include "Managers/ChatSystem.h"
 #include "Characters/MyPlayerController.h"
+#include "Managers/UIManager.h"
+#include "Kismet/GameplayStatics.h"
 
 void UChatWidget::NativeConstruct()
 {
@@ -21,7 +23,12 @@ void UChatWidget::NativeConstruct()
 		AChatSystem* ChatSystem = PC->GetChatSystem();
 		if (ChatSystem)
 		{
+			UE_LOG(LogTemp, Warning, TEXT("Chatsystem is not nullptr"));
 			ChatSystem->OnMessageReceived.AddUObject(this, &UChatWidget::OnChatMessageReceived);
+		}
+		else
+		{
+			UE_LOG(LogTemp, Warning, TEXT("Chatsystem is nullptr TT"));
 		}
 	}
 }
@@ -30,7 +37,6 @@ void UChatWidget::OnSendMessage(const FText& Text, ETextCommit::Type CommitMetho
 {
 	if (CommitMethod == ETextCommit::OnEnter)
 	{
-		UE_LOG(LogTemp, Log, TEXT("Send Message Enter !"));
 		FString Message = Text.ToString();
 		AMyPlayerController* PC = Cast<AMyPlayerController>(GetOwningPlayer());
 		if (PC)
@@ -40,8 +46,8 @@ void UChatWidget::OnSendMessage(const FText& Text, ETextCommit::Type CommitMetho
 			{
 				ChatSystem->ServerSendMessage(Message);
 				ET_ChatBox->SetText(FText::GetEmpty());
-			}
-				
+				AppendLogToChatBox(Message);
+			}				
 		}
 	}
 }
@@ -58,7 +64,11 @@ void UChatWidget::AppendLogToChatBox(const FString& Message)
 	{
 		NewMessage->SetText(FText::FromString(Message));
 		SB_ChatLog->AddChild(NewMessage);
-		SB_ChatLog->ScrollToEnd();
-	}
+		UE_LOG(LogTemp, Warning, TEXT("[ChatWidget] AppendLogToChatBox added message: %s"), *Message);
 
+		SB_ChatLog->ScrollToEnd();
+
+	}
 }
+
+

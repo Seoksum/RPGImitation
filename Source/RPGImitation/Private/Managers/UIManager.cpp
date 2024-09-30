@@ -9,6 +9,7 @@
 #include "UI/SendMailListWidget.h"
 #include "UI/FullMailWidget.h"
 #include "UI/DailyLoginRewardWidget.h"
+#include "UI/ChatWidget.h"
 
 
 UUIManager::UUIManager()
@@ -169,5 +170,15 @@ void UUIManager::AddMailToSendMailBox(class UMailData* InMailData)
 	{
 		SendMailListWidget->AddMailToList(InMailData);
 	}
+}
+
+UChatWidget* UUIManager::GetChatWidget()
+{
+	if (!ChatWidget)
+	{
+		ChatWidget = CreateWidget<UChatWidget>(GetWorld(), ChatWidgetClass);
+	}
+
+	return ChatWidget;
 }
 

@@ -25,19 +25,18 @@ public:
 	UFUNCTION(NetMulticast, Reliable)
 	void MulticastReceiveMessage(const FString& Message);
 
-	void HandleChatMessage(const FString& Message);
 
 	FOnMessageReceived OnMessageReceived;
 
 	virtual void OnRep_Owner() override;
 
-	void SetOwningOwner(AActor* NewOwner);
+	UPROPERTY(EditAnywhere, Category = "UI")
+	class UChatWidget* ChatWidget;
 
-	UPROPERTY(Transient, ReplicatedUsing = OnRep_MyOwner)
-		class AActor* MyOwner;
+	// 위젯 클래스 참조
+	UPROPERTY(BlueprintReadWrite, Category = "UI", Meta = (BlueprintProtected = true))
+	TSubclassOf<class UChatWidget> ChatWidgetClass;
 
-	UFUNCTION()
-	void OnRep_MyOwner();
 
 
 protected:

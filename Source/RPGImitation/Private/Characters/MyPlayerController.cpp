@@ -7,6 +7,7 @@
 #include "Managers/ChatSystem.h"
 #include "EngineUtils.h"
 #include "Kismet/GameplayStatics.h"
+#include "UI/ChatWidget.h"
 
 AMyPlayerController::AMyPlayerController()
 {   
@@ -15,11 +16,27 @@ AMyPlayerController::AMyPlayerController()
 
     bReplicates = true;
     bAlwaysRelevant = true;
+
+    static ConstructorHelpers::FClassFinder<UUserWidget> ChatWidgetClassRef(TEXT("WidgetBlueprint'/Game/Contents/UI/Chat/WBP_ChatWidget.WBP_ChatWidget_C'"));
+    if (ChatWidgetClassRef.Succeeded())
+    {
+        ChatWidgetClass = ChatWidgetClassRef.Class;
+        ChatWidget = CreateWidget<UChatWidget>(GetWorld(), ChatWidgetClass);
+    }
+
 }
 
 void AMyPlayerController::BeginPlay()
 {
     Super::BeginPlay();
+
+    if (IsLocalController())  // 클라이언트에서만 UI 생성
+    {
+        if (ChatWidget)
+        {
+            ChatWidget->AddToViewport();
+        }
+    }
 
     InitChatSystem();
 }
@@ -29,13 +46,8 @@ void AMyPlayerController::InitChatSystem()
     if (HasAuthority())  // 서버에서만 ChatSystem을 생성
     {
         ChatSystem = GetWorld()->SpawnActor<AChatSystem>();
-        ChatSystem->SetOwningOwner(GetPawn());
-        ChatSystem->SetOwner(GetPawn());
-
-        if (nullptr != GetPawn())
-        {
-            UE_LOG(LogTemp, Warning, TEXT("ChatSystem owner is set to Pawn: %s"), *GetPawn()->GetName());
-        }
+        //ChatSystem->SetOwningOwner(PlayerState);
+        ChatSystem->SetOwner(this);
     }
 }
 

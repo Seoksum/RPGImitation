@@ -47,13 +47,16 @@ protected:
     class UMailListWidget* MailListWidget;
 
     UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "UI")
-        class USendMailListWidget* SendMailListWidget;
+    class USendMailListWidget* SendMailListWidget;
 
     UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "UI")
-        class UFullMailWidget* FullMailWidget;
+    class UFullMailWidget* FullMailWidget;
 
     UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "UI")
-        class UDailyLoginRewardWidget* DailyRewardWidget;
+    class UDailyLoginRewardWidget* DailyRewardWidget;
+
+    UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "UI")
+        class UChatWidget* ChatWidget;
 
 public:
 
@@ -71,7 +74,10 @@ public:
     TSubclassOf<class UFullMailWidget> FullMailWidgetClass;
 
     UPROPERTY(EditAnywhere, Category = "Widget Class")
-        TSubclassOf<class UDailyLoginRewardWidget> DailyRewardWidgetClass;
+    TSubclassOf<class UDailyLoginRewardWidget> DailyRewardWidgetClass;
+
+    UPROPERTY(EditAnywhere, Category = "Widget Class")
+        TSubclassOf<class UChatWidget> ChatWidgetClass;
 
 
 
@@ -93,5 +99,6 @@ public:
     void AddMailReceiveToMailBox(class UMailData* InMailData);
     void AddMailToSendMailBox(class UMailData* InMailData);
 
+    UChatWidget* GetChatWidget();
 
 };
