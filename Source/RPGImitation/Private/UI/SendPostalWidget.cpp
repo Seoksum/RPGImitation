@@ -17,6 +17,12 @@ void USendPostalWidget::NativeConstruct()
 {
 	Super::NativeConstruct();
 
+	//Btn_Send->OnClicked.AddDynamic(this, &USendPostalWidget::OnClickSendButton);
+
+	if (Btn_Send->OnClicked.IsAlreadyBound(this, &USendPostalWidget::OnClickSendButton))
+	{
+		Btn_Send->OnClicked.RemoveDynamic(this, &USendPostalWidget::OnClickSendButton);
+	}
 	Btn_Send->OnClicked.AddDynamic(this, &USendPostalWidget::OnClickSendButton);
 }
 
@@ -29,7 +35,7 @@ void USendPostalWidget::OnClickSendButton()
 	MailData->Message = ET_Contents->GetText().ToString();
 
 	AMyPlayerController* PlayerController = Cast<AMyPlayerController>(UGameplayStatics::GetPlayerController(GetWorld(), 0));
-	UUIManager* UIManager = PlayerController->UIManager;
+	UUIManager* UIManager = PlayerController->GetUIManager();
 	if (UIManager)
 	{
 		UIManager->AddMailToSendMailBox(MailData);

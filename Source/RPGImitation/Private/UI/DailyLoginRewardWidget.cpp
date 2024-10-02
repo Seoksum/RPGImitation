@@ -28,6 +28,11 @@ void UDailyLoginRewardWidget::NativeConstruct()
 		InitGridPanel();
 		IsButtonCreated = true;
 	}
+
+	if (ButtonWidget->OnRewardButtonClicked.IsBound())
+	{
+		ButtonWidget->OnRewardButtonClicked.RemoveAll(this);
+	}
 }
 
 void UDailyLoginRewardWidget::NativeOnInitialized()
@@ -35,6 +40,13 @@ void UDailyLoginRewardWidget::NativeOnInitialized()
 	Super::NativeOnInitialized();
 
 }
+
+void UDailyLoginRewardWidget::NativeDestruct()
+{
+	Super::NativeDestruct();
+
+}
+
 
 void UDailyLoginRewardWidget::CreateRewardInfos()
 {
