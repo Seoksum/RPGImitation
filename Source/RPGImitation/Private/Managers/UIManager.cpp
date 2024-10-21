@@ -5,20 +5,23 @@
 #include "Blueprint/UserWidget.h"
 #include "UI/ItemList.h"
 #include "UI/ScrollBoxInventoryWidget.h"
-#include "UI/MailListWidget.h"
-#include "UI/SendMailListWidget.h"
-#include "UI/FullMailWidget.h"
-#include "UI/DailyLoginRewardWidget.h"
-#include "UI/ChatWidget.h"
+#include "UI/Mail/MailListWidget.h"
+#include "UI/Mail/SendMailListWidget.h"
+#include "UI/Mail/FullMailWidget.h"
+#include "UI/DailyReward/DailyLoginRewardWidget.h"
+#include "UI/Chat/ChatWidget.h"
+#include "UI/Inventory/InventoryWidget.h"
+#include "UI/Shop/ShopItemListWidget.h"
+#include "UI/Stat/CharacterSkillWidget.h"
 
 
 UUIManager::UUIManager()
 {
-	static ConstructorHelpers::FClassFinder<UUserWidget> ItemListWidgetClass(TEXT("WidgetBlueprint'/Game/Contents/UI/WBP_ItemListWidget.WBP_ItemListWidget_C'"));
-	if (ItemListWidgetClass.Succeeded())
+	static ConstructorHelpers::FClassFinder<UUserWidget> LVItemListWidgetClass(TEXT("WidgetBlueprint'/Game/Contents/UI/WBP_ItemListWidget.WBP_ItemListWidget_C'"));
+	if (LVItemListWidgetClass.Succeeded())
 	{
-		InventoryWidgetClass = ItemListWidgetClass.Class;
-		InventoryWidget = CreateWidget<UItemList>(GetWorld(), InventoryWidgetClass);
+		LV_InventoryWidgetClass = LVItemListWidgetClass.Class;
+		LV_InventoryWidget = CreateWidget<UItemList>(GetWorld(), LV_InventoryWidgetClass);
 	}
 
 	static ConstructorHelpers::FClassFinder<UUserWidget> SBItemListWidgetClass(TEXT("WidgetBlueprint'/Game/Contents/UI/WBP_ScrollBoxItemWidget.WBP_ScrollBoxItemWidget_C'"));
@@ -55,49 +58,34 @@ UUIManager::UUIManager()
 		DailyRewardWidget = CreateWidget<UDailyLoginRewardWidget>(GetWorld(), DailyRewardWidgetClass);
 	}
 
-
-}
-
-void UUIManager::SetUIState(EUIState NewState)
-{
-	CurrentUIState = NewState;
-	//UpdateUI();
-}
-
-void UUIManager::UpdateUI()
-{
-	// 기존 위젯 제거
-	if (CurrentWidget)
+	static ConstructorHelpers::FClassFinder<UUserWidget> InventoryWidgetClassRef(TEXT("WidgetBlueprint'/Game/Contents/UI/Inventory/WBP_InventoryWidget.WBP_InventoryWidget_C'"));
+	if (InventoryWidgetClassRef.Succeeded())
 	{
-		CurrentWidget->RemoveFromViewport();
-		CurrentWidget = nullptr;
+		InventoryWidgetClass = InventoryWidgetClassRef.Class;
+		InventoryWidget = CreateWidget<UInventoryWidget>(GetWorld(), InventoryWidgetClass);
 	}
 
-	switch (CurrentUIState)
+	static ConstructorHelpers::FClassFinder<UUserWidget> ShopWidgetClassRef(TEXT("WidgetBlueprint'/Game/Contents/UI/Shop/WBP_ShopItemListWidget.WBP_ShopItemListWidget_C'"));
+	if (ShopWidgetClassRef.Succeeded())
 	{
-	case EUIState::UI_Inventory:
-		if (InventoryWidgetClass)
-		{
-			CurrentWidget = CreateWidget<UUserWidget>(GetWorld(), InventoryWidgetClass);
-		}
-		break;
-
-	case EUIState::UI_Mail:
-		if (MailListWidgetClass)
-		{
-			CurrentWidget = CreateWidget(GetWorld(), MailListWidgetClass);
-		}
-		break;
-
-	case EUIState::UI_None:
-		break;
+		ShopWidgetClass = ShopWidgetClassRef.Class;
+		ShopWidget = CreateWidget<UShopItemListWidget>(GetWorld(), ShopWidgetClass);
 	}
 
-	if (CurrentWidget)
+	static ConstructorHelpers::FClassFinder<UUserWidget> WinScreenWidgetClassRef(TEXT("WidgetBlueprint'/Game/Contents/UI/WBP_WinScreenWidget.WBP_WinScreenWidget_C'"));
+	if (WinScreenWidgetClassRef.Succeeded())
 	{
-		CurrentWidget->AddToViewport();
-		
+		WinScreenWidgetClass = WinScreenWidgetClassRef.Class;
+		WinScreenWidget = CreateWidget(GetWorld(), WinScreenWidgetClass);
 	}
+
+	static ConstructorHelpers::FClassFinder<UUserWidget> LoseScreenWidgetClassRef(TEXT("WidgetBlueprint'/Game/Contents/UI/WBP_LoseScreenWidget.WBP_LoseScreenWidget_C'"));
+	if (LoseScreenWidgetClassRef.Succeeded())
+	{
+		LoseScreenWidgetClass = LoseScreenWidgetClassRef.Class;
+		LoseScreenWidget = CreateWidget(GetWorld(), LoseScreenWidgetClass);
+	}
+
 }
 
 void UUIManager::UpdateUIState(EUIState NewState, bool IsActive)
@@ -106,6 +94,12 @@ void UUIManager::UpdateUIState(EUIState NewState, bool IsActive)
 	{
 		if (IsActive) { InventoryWidget->AddToViewport(); }
 		else { InventoryWidget->RemoveFromViewport(); }
+	}
+
+	else if (NewState == EUIState::UI_LVInventory)
+	{
+		if (IsActive) { LV_InventoryWidget->AddToViewport(); }
+		else { LV_InventoryWidget->RemoveFromViewport(); }
 	}
 
 	else if (NewState == EUIState::UI_SBInventory)
@@ -122,41 +116,56 @@ void UUIManager::UpdateUIState(EUIState NewState, bool IsActive)
 
 	else if (NewState == EUIState::UI_DailyReward)
 	{
-		if (IsActive) 
-		{
-			//DailyRewardWidget = CreateWidget<UDailyLoginRewardWidget>(GetWorld(), DailyRewardWidgetClass);
-			DailyRewardWidget->AddToViewport();
-		}
-		else 
-		{ 
-			DailyRewardWidget->RemoveFromViewport();
-		}
+		if (IsActive) { DailyRewardWidget->AddToViewport(); }
+		else { DailyRewardWidget->RemoveFromViewport(); }
 	}
 
-}
-
-EUIState UUIManager::GetCurrentUIState()
-{
-	return CurrentUIState;
-}
-
-void UUIManager::AddItemToInventory(class AItem* InItem)
-{
-	if (InventoryWidget)
+	else if (NewState == EUIState::UI_Shop)
 	{
-		InventoryWidget->AddItemToList(InItem);
+		if (IsActive)
+		{ 
+			if(ShopWidget && !ShopWidget->IsInViewport())
+				ShopWidget->AddToViewport(); 
+		}
+		else
+		{ 
+			if (ShopWidget->IsInViewport())
+			{
+				ShopWidget->RemoveFromViewport();
+			}
+		}
+	}
+
+	else if (NewState == EUIState::UI_WinScreen)
+	{
+		if (IsActive) { WinScreenWidget->AddToViewport(); }
+		else { WinScreenWidget->RemoveFromViewport(); }
+	}
+
+	else if (NewState == EUIState::UI_LoseScreen)
+	{
+		if (IsActive) { LoseScreenWidget->AddToViewport(); }
+		else { LoseScreenWidget->RemoveFromViewport(); }
 	}
 }
 
-void UUIManager::SB_AddItemToInventory(class AItem* InItem)
+void UUIManager::AddMailToLV(class UMailData* InMailData)
+{
+	if (LV_InventoryWidget)
+	{
+		LV_InventoryWidget->AddMailToList(InMailData);
+	}
+}
+
+void UUIManager::AddMailToSB(class UMailData* InMailData)
 {
 	if (SB_InventoryWidget)
 	{
-		SB_InventoryWidget->AddItemToInventory(InItem);
+		SB_InventoryWidget->AddItemToInventory(InMailData);
 	}
 }
 
-void UUIManager::AddMailReceiveToMailBox(class UMailData* InMailData)
+void UUIManager::AddReceivedMailToMailBox(class UMailData* InMailData)
 {
 	if (MailListWidget)
 	{
@@ -180,5 +189,29 @@ UChatWidget* UUIManager::GetChatWidget()
 	}
 
 	return ChatWidget;
+}
+
+void UUIManager::SetInGameWidget(UUserWidget* InWidget)
+{
+	if (InWidget)
+	{
+		InGameWidget = InWidget;
+		CharacterSkillWidget = Cast<UCharacterSkillWidget>(InGameWidget->GetWidgetFromName(TEXT("WBP_CharacterSkillWidget")));
+	}
+}
+
+void UUIManager::StartSkillAttackQ()
+{
+	if (CharacterSkillWidget) { CharacterSkillWidget->StartAttackQ(); }
+}
+
+void UUIManager::StartSkillAttackE()
+{
+	if (CharacterSkillWidget) { CharacterSkillWidget->StartAttackE(); }
+}
+
+void UUIManager::StartSkillAttackR()
+{
+	if (CharacterSkillWidget) { CharacterSkillWidget->StartAttackR(); }
 }
 

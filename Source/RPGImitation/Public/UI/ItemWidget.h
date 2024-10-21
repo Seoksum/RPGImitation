@@ -22,16 +22,21 @@ protected:
 	virtual void NativeOnListItemObjectSet(UObject* ListItemObject) override;
 
 
-	
 public:
 
-	void SetItemInfo(class UItemData* InItem);
+	void SetMailInfo(class UMailData* InMail);
 
 	UPROPERTY(meta = (BindWidget))
-	class UImage* ItemImage;
+	class UTextBlock* T_Sender;
 
 	UPROPERTY(meta = (BindWidget))
-	class UTextBlock* ItemName;
+	class UTextBlock* T_Title;
+
+	UPROPERTY(meta = (BindWidget))
+	class UImage* Img_Item;
+
+	
+
 
 
 };

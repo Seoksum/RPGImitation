@@ -14,9 +14,13 @@ UENUM(BlueprintType)
 enum class EUIState : uint8
 {
     UI_Inventory UMETA(DisplayName = "Inventory"),
+    UI_LVInventory UMETA(DisplayName = "LV_Inventory"),
     UI_SBInventory UMETA(DisplayName = "SB_Inventory"),
     UI_Mail UMETA(DisplayName = "Mail"),
     UI_DailyReward UMETA(DisplayName = "DailyReward"),
+    UI_Shop UMETA(DisplayName = "Shop"),
+    UI_WinScreen UMETA(DisplayName = "WinScreen"),
+    UI_LoseScreen UMETA(DisplayName = "LoseScreen"),
     UI_None      UMETA(DisplayName = "None")
 };
 
@@ -30,15 +34,11 @@ public:
 
     UUIManager();
 
-    UUserWidget* CurrentWidget;
-
-    EUIState CurrentUIState;
-
 
 protected: 
 
     UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "UI")
-    class UItemList* InventoryWidget;
+    class UItemList* LV_InventoryWidget;
 
     UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "UI")
     class UScrollBoxInventoryWidget* SB_InventoryWidget;
@@ -58,11 +58,30 @@ protected:
     UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "UI")
         class UChatWidget* ChatWidget;
 
+    UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "UI")
+        class UInventoryWidget* InventoryWidget;
+
+    UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "UI")
+        class UShopItemListWidget* ShopWidget;
+
+    UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "UI")
+    UUserWidget* InGameWidget;
+
+    UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "UI")
+    class UCharacterSkillWidget* CharacterSkillWidget;
+
+    UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "UI")
+        UUserWidget* WinScreenWidget;
+
+    UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "UI")
+        UUserWidget* LoseScreenWidget;
+
+
 public:
 
     // Widget Class 
     UPROPERTY(EditAnywhere, Category = "Widget Class")
-    TSubclassOf<class UItemList> InventoryWidgetClass;
+    TSubclassOf<class UItemList> LV_InventoryWidgetClass;
 
     UPROPERTY(EditAnywhere, Category = "Widget Class")
     TSubclassOf<class UScrollBoxInventoryWidget> SB_InventoryWidgetClass;
@@ -77,28 +96,40 @@ public:
     TSubclassOf<class UDailyLoginRewardWidget> DailyRewardWidgetClass;
 
     UPROPERTY(EditAnywhere, Category = "Widget Class")
-        TSubclassOf<class UChatWidget> ChatWidgetClass;
+    TSubclassOf<class UChatWidget> ChatWidgetClass;
+
+    UPROPERTY(EditAnywhere, Category = "Widget Class")
+    TSubclassOf<class UInventoryWidget> InventoryWidgetClass;
+
+    UPROPERTY(EditAnywhere, Category = "Widget Class")
+    TSubclassOf<class UShopItemListWidget> ShopWidgetClass;
+
+    UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "HUD")
+        TSubclassOf<UUserWidget> WinScreenWidgetClass;
+
+    UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "HUD")
+        TSubclassOf<UUserWidget> LoseScreenWidgetClass;
 
 
 
 public:
 
-    // UI 상태를 변경하는 함수
-    void SetUIState(EUIState NewState);
-
-    // 현재 상태에 따라 UI 표시
-    void UpdateUI();
 
     UFUNCTION(BlueprintCallable)
     void UpdateUIState(EUIState NewState, bool IsActive);
 
-    EUIState GetCurrentUIState();
+    void AddMailToLV(class UMailData* InMailData);
+    void AddMailToSB(class UMailData* InMailData);
 
-    void AddItemToInventory(class AItem* InItem);
-    void SB_AddItemToInventory(class AItem* InItem);
-    void AddMailReceiveToMailBox(class UMailData* InMailData);
+    void AddReceivedMailToMailBox(class UMailData* InMailData);
     void AddMailToSendMailBox(class UMailData* InMailData);
 
     UChatWidget* GetChatWidget();
 
+    UFUNCTION(BlueprintCallable)
+    void SetInGameWidget(UUserWidget* InWidget);
+
+    void StartSkillAttackQ();
+    void StartSkillAttackE();
+    void StartSkillAttackR();
 };

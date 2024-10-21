@@ -69,7 +69,7 @@ void AUDPClient::CreateSocket()
 void AUDPClient::StartClientThread()
 {
     // UDPServerRunnable 생성 및 스레드 시작
-    ServerRunnable = MakeShared<FUDPReceiveRunnable>(Socket, LocalAddr, GetWorld(),UIManager);
+    ServerRunnable = MakeShared<FUDPReceiveRunnable>(Socket, LocalAddr, GetWorld(), UIManager);
     ServerThread = FRunnableThread::Create(ServerRunnable.Get(), TEXT("UDPClientRunnableThread"), 0, TPri_BelowNormal);
 }
 

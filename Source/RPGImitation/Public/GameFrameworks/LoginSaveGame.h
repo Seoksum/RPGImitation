@@ -18,10 +18,13 @@ public:
 
 	ULoginSaveGame();
 
-	UPROPERTY()
-	FDateTime LastLoginTime;
+	UFUNCTION(BlueprintCallable)
+	void ResetData();
 
 	UPROPERTY()
-	int32 LastSelectedButtonIndex;
+	FDateTime LastRewardTime;
+
+	UPROPERTY()
+	int32 NextRewardDayButtonIndex;
 
 };

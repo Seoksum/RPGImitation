@@ -27,7 +27,7 @@ public:
 	class UListView* NearbyItemList;
 
 	//UFUNCTION(BlueprintCallable)
-	void AddItemToList(class AItem* InItem);
+	void AddMailToList(class UMailData* InMailData);
 
 
 
@@ -38,6 +38,9 @@ protected:
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "HUD")
 	class UItemWidget* ItemWidget;
+
+	UPROPERTY()
+		class UMailData* MailData;
 
 
 };

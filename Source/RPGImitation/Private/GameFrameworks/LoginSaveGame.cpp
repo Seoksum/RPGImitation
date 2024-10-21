@@ -5,5 +5,11 @@
 
 ULoginSaveGame::ULoginSaveGame()
 {
-	LastSelectedButtonIndex = 1;
+	ResetData();
+}
+
+void ULoginSaveGame::ResetData()
+{
+	LastRewardTime = FDateTime::Now();
+	NextRewardDayButtonIndex = 1;
 }

@@ -3,7 +3,7 @@
 
 #include "Managers/ChatSystem.h"
 #include "Net/UnrealNetwork.h"
-#include "UI/ChatWidget.h"
+#include "UI/Chat/ChatWidget.h"
 #include "Characters/MyPlayerController.h"
 #include "Managers/UIManager.h"
 
@@ -20,15 +20,6 @@ void AChatSystem::BeginPlay()
 {
 	Super::BeginPlay();
 	
-	if (HasAuthority())
-	{
-		UE_LOG(LogTemp, Warning, TEXT("ChatSystem running on server"));
-	}
-	else
-	{
-		UE_LOG(LogTemp, Warning, TEXT("ChatSystem running on client (replicated)"));
-	}
-
 	//OnRep_Owner();
 }
 
@@ -39,13 +30,19 @@ void AChatSystem::ServerSendMessage_Implementation(const FString& Message)
 
 bool AChatSystem::ServerSendMessage_Validate(const FString& Message)
 {
-	return true;
+	return !Message.IsEmpty();
 }
 
 void AChatSystem::MulticastReceiveMessage_Implementation(const FString& Message)
 {
-	UE_LOG(LogTemp, Warning, TEXT("MulticastReceiveMessage called on client with message: %s"), *Message);
-	OnMessageReceived.Broadcast(Message);
+	//AMyPlayerController* PC = Cast<AMyPlayerController>(GetOwner());
+	AMyPlayerController* PC = Cast<AMyPlayerController>(GetWorld()->GetFirstPlayerController());
+
+	if (PC)
+	{
+		PC->ChatWidget->AppendLogToChatBox(Message);
+	}
+
 }
 
 void AChatSystem::OnRep_Owner()

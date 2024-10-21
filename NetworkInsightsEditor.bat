@@ -1,1 +1,1 @@
-UE4Editor.exe "%cd%\RPGImitation.uproject"
+UE4Editor.exe %cd%\RPGImitation.uproject 

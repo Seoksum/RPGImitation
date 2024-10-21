@@ -5,6 +5,7 @@
 #include "CoreMinimal.h"
 #include "Engine/GameInstance.h"
 #include "GameData/RewardDataTable.h"
+#include "GameData/ShopItemDataTable.h"
 #include "MyGameInstance.generated.h"
 
 /**
@@ -23,14 +24,17 @@ public:
 	virtual void Shutdown() override;
 
 	UFUNCTION(BlueprintCallable)
-	bool CheckLoginDate();
+	bool CheckRewardDate();
 
 	void GetReward();
 
-	void LoadLastLoginTime();
-	void SaveLastLoginTime();
+	void LoadLastRewardTime();
+	void SaveLastRewardTime();
 
 	FRewardDataTable* GetRewardDataTable(int32 Day);
+	FShopItemDataTable* GetShopItemDataTable(int32 Index);
+
+	float GetUpdateTime();
 
 protected:
 
@@ -40,7 +44,10 @@ protected:
 	UPROPERTY()
 	UDataTable* RewardDataTable;
 
-	FDateTime LastLoginDate;
+	UPROPERTY()
+	UDataTable* ShopItemDataTable;
+
+	FDateTime LastRewardDate;
 
 
 };

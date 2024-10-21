@@ -62,7 +62,7 @@ void AItem::Tick(float DeltaTime)
 		if (bCurrentlyOverlapping)
 		{
 			//Player->SB_OnItemAcquired(this);
-			Player->OnItemAcquired(this);
+			//Player->OnItemAcquired(this);
 		}
 		
 	}

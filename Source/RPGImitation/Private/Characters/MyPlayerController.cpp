@@ -7,139 +7,169 @@
 #include "Managers/ChatSystem.h"
 #include "EngineUtils.h"
 #include "Kismet/GameplayStatics.h"
-#include "UI/ChatWidget.h"
+#include "UI/Chat/ChatWidget.h"
+#include "../RPGImitationCharacter.h"
 
 AMyPlayerController::AMyPlayerController()
-{   
-    UIManager = CreateDefaultSubobject<UUIManager>(TEXT("UIManger"));
-    RootComponent = CreateDefaultSubobject<USceneComponent>(TEXT("RootComponent"));
+{
+	UIManager = CreateDefaultSubobject<UUIManager>(TEXT("UIManger"));
+	RootComponent = CreateDefaultSubobject<USceneComponent>(TEXT("RootComponent"));
 
-    bReplicates = true;
-    bAlwaysRelevant = true;
+	bReplicates = true;
+	bAlwaysRelevant = true;
 
-    static ConstructorHelpers::FClassFinder<UUserWidget> ChatWidgetClassRef(TEXT("WidgetBlueprint'/Game/Contents/UI/Chat/WBP_ChatWidget.WBP_ChatWidget_C'"));
-    if (ChatWidgetClassRef.Succeeded())
-    {
-        ChatWidgetClass = ChatWidgetClassRef.Class;
-        ChatWidget = CreateWidget<UChatWidget>(GetWorld(), ChatWidgetClass);
-    }
+	static ConstructorHelpers::FClassFinder<UUserWidget> ChatWidgetClassRef(TEXT("WidgetBlueprint'/Game/Contents/UI/Chat/WBP_ChatWidget.WBP_ChatWidget_C'"));
+	if (ChatWidgetClassRef.Succeeded())
+	{
+		ChatWidgetClass = ChatWidgetClassRef.Class;
+		ChatWidget = CreateWidget<UChatWidget>(GetWorld(), ChatWidgetClass);
+	}
 
 }
 
 void AMyPlayerController::BeginPlay()
 {
-    Super::BeginPlay();
+	Super::BeginPlay();
 
-    if (IsLocalController())  // 클라이언트에서만 UI 생성
-    {
-        if (ChatWidget)
-        {
-            ChatWidget->AddToViewport();
-        }
-    }
+	InitChatSystem();
 
-    InitChatSystem();
+	if (IsLocalController())  // 클라이언트에서만 UI 생성
+	{
+		if (ChatWidget)
+		{
+			ChatWidget->AddToViewport();
+		}
+	}
 }
 
 void AMyPlayerController::InitChatSystem()
 {
-    if (HasAuthority())  // 서버에서만 ChatSystem을 생성
-    {
-        ChatSystem = GetWorld()->SpawnActor<AChatSystem>();
-        //ChatSystem->SetOwningOwner(PlayerState);
-        ChatSystem->SetOwner(this);
-    }
+	if (HasAuthority())  // 서버에서만 ChatSystem을 생성
+	{
+		ChatSystem = GetWorld()->SpawnActor<AChatSystem>();
+		ChatSystem->SetOwner(this);
+	}
 }
 
 void AMyPlayerController::SetupInputComponent()
 {
-    Super::SetupInputComponent();
+	Super::SetupInputComponent();
 
-    // 입력 바인딩: 'Tab' 키로 인벤토리 UI를 토글
-    InputComponent->BindAction("ToggleInventory", IE_Pressed, this, &AMyPlayerController::ToggleInventory);
-    InputComponent->BindAction("SBToggleInventory", IE_Pressed, this, &AMyPlayerController::SBToggleInventory);
+	// 입력 바인딩: 'Tab' 키로 인벤토리 UI를 토글
+	//InputComponent->BindAction("ToggleInventory", IE_Pressed, this, &AMyPlayerController::LVToggleInventory);
+	//InputComponent->BindAction("SBToggleInventory", IE_Pressed, this, &AMyPlayerController::SBToggleInventory);
+	InputComponent->BindAction("Inventory", IE_Pressed, this, &AMyPlayerController::ToggleInventory);
 
-    InputComponent->BindAction("MyCheat", IE_Pressed, this, &AMyPlayerController::EnableMyCheat);
+	InputComponent->BindAction("MailCheat", IE_Pressed, this, &AMyPlayerController::Cheat_Mail);
+	InputComponent->BindAction("GoldCheat", IE_Pressed, this, &AMyPlayerController::Cheat_Gold);
 
-    // 콘솔 명령어와 바인딩된 함수
-    if (GEngine)
-    {
-        GEngine->Exec(GetWorld(), TEXT("MyCheat"));
-    }
+	// 콘솔 명령어와 바인딩된 함수
+	if (GEngine)
+	{
+		GEngine->Exec(GetWorld(), TEXT("MyCheat"));
+	}
 }
 
-void AMyPlayerController::EnableMyCheat()
+void AMyPlayerController::GameHasEnded(AActor* EndGameFocus, bool bIsWinner)
 {
-    if (GEngine)
-    {
-        UMailData* MailData = NewObject<UMailData>();
-        MailData->Sender = "Cheat";
-        MailData->Title = "Cheat Title";
-        MailData->Message = "Test Message...";
+	Super::GameHasEnded(EndGameFocus, bIsWinner);
 
-        UIManager->AddMailReceiveToMailBox(MailData);
-        if (GEngine)
-        {
-            GEngine->Exec(GetWorld(), TEXT("MyCheat"));
-        }
-    }
+	if (bIsWinner)
+	{
+		UIManager->UpdateUIState(EUIState::UI_WinScreen, true);
+	}
+	else
+	{
+		UIManager->UpdateUIState(EUIState::UI_LoseScreen, true);
+	}
 }
 
+
+void AMyPlayerController::Cheat_Mail()
+{
+	if (GEngine)
+	{
+		UMailData* MailData = NewObject<UMailData>();
+		MailData->Sender = "Cheat";
+		MailData->Title = "Cheat Title";
+		MailData->Message = "Test Message...";
+
+		UIManager->AddReceivedMailToMailBox(MailData);
+	}
+}
+
+void AMyPlayerController::Cheat_Gold()
+{
+	ARPGImitationCharacter* MyCharacter = Cast<ARPGImitationCharacter>(GetPawn());
+	if (MyCharacter)
+	{
+		MyCharacter->AddGold(10000);
+	}
+}
 
 void AMyPlayerController::ToggleInventory()
 {
-    if (UIManager)
-    {
-        if (IsInventoryActived)
-        {
-            SetInputMode(FInputModeGameOnly());
-        }
-        else
-        {
-            SetInputMode(FInputModeGameAndUI());
-        }
+	if (UIManager)
+	{
+		SetInputMode(FInputModeGameAndUI());
+		IsInventoryActived = !IsInventoryActived;
+		UIManager->UpdateUIState(EUIState::UI_Inventory, IsInventoryActived);
+	}
 
-        IsInventoryActived = !IsInventoryActived;
-        UIManager->UpdateUIState(EUIState::UI_Inventory, IsInventoryActived);
-        bShowMouseCursor = IsInventoryActived;
-    }
+}
+
+void AMyPlayerController::LVToggleInventory()
+{
+	if (UIManager)
+	{
+		if (IsInventoryActived)
+		{
+			SetInputMode(FInputModeGameOnly());
+		}
+		else
+		{
+			SetInputMode(FInputModeGameAndUI());
+		}
+
+		IsInventoryActived = !IsInventoryActived;
+		UIManager->UpdateUIState(EUIState::UI_LVInventory, IsInventoryActived);
+		bShowMouseCursor = IsInventoryActived;
+	}
 }
 
 void AMyPlayerController::SBToggleInventory()
 {
-    if (UIManager)
-    {
-        if (SBIsInventoryActived)
-        {
-            //UIManager->UpdateUIState(EUIState::UI_SBInventory, false);
-            SetInputMode(FInputModeGameOnly());
-        }
-        else
-        {
-            //UIManager->UpdateUIState(EUIState::UI_SBInventory, true);
-            SetInputMode(FInputModeGameAndUI());
-        }
-        SBIsInventoryActived = !SBIsInventoryActived;
-        UIManager->UpdateUIState(EUIState::UI_SBInventory, SBIsInventoryActived);
-        bShowMouseCursor = SBIsInventoryActived;
-    }
+	if (UIManager)
+	{
+		if (SBIsInventoryActived)
+		{
+			SetInputMode(FInputModeGameOnly());
+		}
+		else
+		{
+			SetInputMode(FInputModeGameAndUI());
+		}
+		SBIsInventoryActived = !SBIsInventoryActived;
+		UIManager->UpdateUIState(EUIState::UI_SBInventory, SBIsInventoryActived);
+		bShowMouseCursor = SBIsInventoryActived;
+	}
 }
 
 UUIManager* AMyPlayerController::GetUIManager()
 {
-    if (UIManager != nullptr) return UIManager;
-    return nullptr;
+	if (UIManager != nullptr) return UIManager;
+	return nullptr;
 }
 
 AChatSystem* AMyPlayerController::GetChatSystem()
 {
-    if (ChatSystem != nullptr) return ChatSystem;
+	if (ChatSystem != nullptr) return ChatSystem;
 
-    for (TActorIterator<AChatSystem> It(GetWorld()); It; ++It)
-    {
-        ChatSystem = *It;
-        break;
-    }
+	for (TActorIterator<AChatSystem> It(GetWorld()); It; ++It)
+	{
+		ChatSystem = *It;
+		break;
+	}
 
-    return ChatSystem;
+	return ChatSystem;
 }

@@ -5,28 +5,35 @@
 #include "Components/ListView.h"
 #include "UI/ItemWidget.h"
 #include "Items/Item.h"
+#include "Items/MailData.h"
 #include "Items/ItemData.h"
 
 void UItemList::NativeConstruct()
 {
 	Super::NativeConstruct();
 	
+	MailData = NewObject<UMailData>();
+	MailData->Sender = "Sender";
+	MailData->Title = "ListViewMailTitle";
+	MailData->Thumbnail = LoadObject<UTexture2D>(nullptr, TEXT("Texture2D'/Game/Contents/Images/Mails/Mail.Mail'"));
 }
 
 
-void UItemList::AddItemToList(class AItem* InItem)
+void UItemList::AddMailToList(class UMailData* InMailData)
 {
 	if (!NearbyItemList) return;
 
-	UItemData* NewItemWidgetData = NewObject<UItemData>(InItem);
-	if (NewItemWidgetData)
-	{
-		NewItemWidgetData->ItemName = InItem->ItemName.ToString();
-		NewItemWidgetData->Thumbnail = InItem->Thumbnail;
+	MailData = NewObject<UMailData>();
+	MailData->Sender = "Sender";
+	MailData->Title = "ListViewMailTitle";
 
-		NearbyItemList->AddItem(NewItemWidgetData);
-		NearbyItemList->ScrollToBottom();
-		NearbyItemList->RequestRefresh();
+	MailData->Thumbnail = LoadObject<UTexture2D>(nullptr, TEXT("Texture2D'/Game/Contents/Images/Mails/Mail.Mail'"));
+	InMailData->Thumbnail = LoadObject<UTexture2D>(nullptr, TEXT("Texture2D'/Game/Contents/Images/Mails/Mail.Mail'"));
+	if (MailData)
+	{
+		NearbyItemList->AddItem(InMailData);
+		//NearbyItemList->ScrollToBottom();
+		//NearbyItemList->RequestRefresh();
 	}
 
 	//UItemWidget* NewItemWidget = CreateWidget<UItemWidget>(GetWorld(), ItemWidgetClass);

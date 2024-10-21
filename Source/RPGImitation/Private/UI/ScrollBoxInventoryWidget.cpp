@@ -3,28 +3,29 @@
 
 #include "UI/ScrollBoxInventoryWidget.h"
 #include "UI/ItemWidget.h"
-#include "Items/ItemData.h"
+#include "UI/Mail/MailWidget.h"
+#include "Items/MailData.h"
 #include "Items/Item.h"
 #include "Components/ScrollBox.h"
 
 
-void UScrollBoxInventoryWidget::AddItemToInventory(class AItem* InItem)
+void UScrollBoxInventoryWidget::AddItemToInventory(class UMailData* InMailData)
 {
-	if (ItemWidgetClass && ItemScrollBox)
+	if (MailWidgetClass && MailScrollBox)
 	{
-		UItemData* NewItemWidgetData = NewObject<UItemData>(InItem);
-		NewItemWidgetData->ItemName = InItem->ItemName.ToString();
-		NewItemWidgetData->Thumbnail = InItem->Thumbnail;
+		UMailData* MailData = NewObject<UMailData>();
+		MailData->Sender = "Sumin";
+		MailData->Title = "ScrollBox Mail";
+		MailData->Thumbnail = LoadObject<UTexture2D>(nullptr, TEXT("Texture2D'/Game/Contents/Images/Mails/Mail.Mail'"));
 
-		UItemWidget* NewItemWidget = CreateWidget<UItemWidget>(this, ItemWidgetClass);
 
-		if (NewItemWidget)
+		UMailWidget* NewMailWidget = CreateWidget<UMailWidget>(this, MailWidgetClass);
+		if (NewMailWidget)
 		{
 			// 아이템 정보를 설정
-			NewItemWidget->SetItemInfo(NewItemWidgetData);
-
+			NewMailWidget->SetMailInfo(InMailData);
 			// ScrollBox에 추가
-			ItemScrollBox->AddChild(NewItemWidget);
+			MailScrollBox->AddChild(NewMailWidget);
 		}
 	}
 }

@@ -21,10 +21,10 @@ public:
     AMyPlayerController();
 
     UFUNCTION(BlueprintCallable)
-        UUIManager* GetUIManager();
+    UUIManager* GetUIManager();
 
     UFUNCTION(BlueprintCallable)
-        class AChatSystem* GetChatSystem();
+    class AChatSystem* GetChatSystem();
 
 protected:
 
@@ -32,14 +32,22 @@ protected:
 
     virtual void SetupInputComponent() override; 
 
+    virtual void GameHasEnded(AActor* EndGameFocus, bool bIsWinner) override;
+
+protected:
+
     // UI 상태 변경 함수
-    void ToggleInventory();
+    void LVToggleInventory();
 
     void SBToggleInventory();
 
-    void EnableMyCheat();
+    void Cheat_Mail();
+
+    void Cheat_Gold();
 
     void InitChatSystem();
+
+    void ToggleInventory();
 
 public:
 

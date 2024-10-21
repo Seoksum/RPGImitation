@@ -18,16 +18,16 @@ public:
 
 	// 아이템을 ScrollBox에 추가하는 함수
 	UFUNCTION(BlueprintCallable, Category = "Inventory")
-	void AddItemToInventory(class AItem* InItem);
+	void AddItemToInventory(class UMailData* InMailData);
 
 public:
 
 	UPROPERTY(meta = (BindWidget))
-	class UScrollBox* ItemScrollBox;
+	class UScrollBox* MailScrollBox;
 
 
 	UPROPERTY(EditAnywhere, Category = "Inventory")
-	TSubclassOf<class UItemWidget> ItemWidgetClass;
+	TSubclassOf<class UMailWidget> MailWidgetClass;
 	
 
 

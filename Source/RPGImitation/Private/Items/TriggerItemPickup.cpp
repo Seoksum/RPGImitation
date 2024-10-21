@@ -46,7 +46,7 @@ void ATriggerItemPickup::OnOverlapBegin(UPrimitiveComponent* OverlappedComp, AAc
 	ARPGImitationCharacter* Player = Cast<ARPGImitationCharacter>(OtherActor);
 	if (Player)
 	{
-		Player->OnItemAcquired(Item);
+		//Player->OnItemAcquired(Item);
 		//UE_LOG(LogTemp, Log, TEXT("Character Trigger On ! "));
 	}
 

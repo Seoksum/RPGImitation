@@ -52,10 +52,8 @@ void FUDPReceiveRunnable::ReceiveData()
 {
     TArray<uint8> ReceivedData;
     ReceivedData.SetNumUninitialized(1024);
-
     int32 BytesRead = 0;
     TSharedRef<FInternetAddr> Sender = ISocketSubsystem::Get(PLATFORM_SOCKETSUBSYSTEM)->CreateInternetAddr();
-
 
     // 데이터 수신
     if (Socket->RecvFrom(ReceivedData.GetData(), ReceivedData.Num(), BytesRead, *Sender))
@@ -63,11 +61,9 @@ void FUDPReceiveRunnable::ReceiveData()
         if (BytesRead > 0)
         {
             ReceivedString = FString(ANSI_TO_TCHAR(reinterpret_cast<const char*>(ReceivedData.GetData())));
-            UE_LOG(LogTemp, Log, TEXT("Received : %s"), *ReceivedString);
+
             AsyncTask(ENamedThreads::GameThread, [this]()
                 {
-                    // UWorld를 사용한 작업은 반드시 게임 스레드에서 실행되어야 합니다.
-                    // ValidWorld에서 필요한 작업 수행
                     if (World.IsValid())
                     {
                         if (nullptr != UIManager)
@@ -77,14 +73,11 @@ void FUDPReceiveRunnable::ReceiveData()
                             {
                                 MailData->Sender = "Server";
                                 MailData->Title = ReceivedString;
-
-                                UIManager->AddMailReceiveToMailBox(MailData);
-                                
+                               UIManager->AddReceivedMailToMailBox(MailData);  
                             }
                         }
                     }
                 });
-
         }
     }
 }

@@ -4,7 +4,6 @@
 #include "GameFrameworks/MyGameInstance.h"
 #include "Kismet/GameplayStatics.h"
 #include "GameFrameworks/LoginSaveGame.h"
-#include "Kismet/GameplayStatics.h"
 
 
 UMyGameInstance::UMyGameInstance()
@@ -16,16 +15,22 @@ UMyGameInstance::UMyGameInstance()
 		RewardDataTable = RewardDataPathObject.Object;
 	}
 
-	UpdateTime = 5.f;
+	FString ShopItemDataPath = TEXT("DataTable'/Game/Contents/Data/ShopItemDataTable.ShopItemDataTable'");
+	static ConstructorHelpers::FObjectFinder<UDataTable> ShopItemDataPathObject(*ShopItemDataPath);
+	if (ShopItemDataPathObject.Succeeded())
+	{
+		ShopItemDataTable = ShopItemDataPathObject.Object;
+	}
+
+	UpdateTime = 1.f;
 }
 
 void UMyGameInstance::Init()
 {
 	Super::Init();
 
-	
-	LoadLastLoginTime();
-	CheckLoginDate();
+	LoadLastRewardTime();
+	CheckRewardDate();
 
 }
 
@@ -33,19 +38,17 @@ void UMyGameInstance::Shutdown()
 {
 	Super::Shutdown();
 
-
-	SaveLastLoginTime();
+	SaveLastRewardTime();
 }
 
-bool UMyGameInstance::CheckLoginDate()
+bool UMyGameInstance::CheckRewardDate()
 {
 	FDateTime CurrentDate = FDateTime::Now();
-	
-	FTimespan TimeDiff = CurrentDate - LastLoginDate;
+	FTimespan TimeDiff = CurrentDate - LastRewardDate;
+
 	if (TimeDiff.GetTotalSeconds() >= UpdateTime)
 	{
-		GetReward(); // 보상
-		SaveLastLoginTime(); // LastLoginDate 갱신
+		SaveLastRewardTime(); // LastRewardDate 갱신
 		return true;
 	}
 	return false;
@@ -53,25 +56,26 @@ bool UMyGameInstance::CheckLoginDate()
 
 void UMyGameInstance::GetReward()
 {
-	UE_LOG(LogTemp, Log, TEXT("Get Reward !! "));
+	//UE_LOG(LogTemp, Log, TEXT("Get Reward !! "));
 }
 
-void UMyGameInstance::LoadLastLoginTime()
+void UMyGameInstance::LoadLastRewardTime()
 {
 	ULoginSaveGame* LoginSaveGame = Cast<ULoginSaveGame>(UGameplayStatics::LoadGameFromSlot(TEXT("LoginSaveSlot"), 0));
 	if (LoginSaveGame)
-	{		LastLoginDate = LoginSaveGame->LastLoginTime;
+	{		
+		LastRewardDate = LoginSaveGame->LastRewardTime;
 	}
 }
 
-void UMyGameInstance::SaveLastLoginTime()
+void UMyGameInstance::SaveLastRewardTime()
 {
-	LastLoginDate = FDateTime::Now();
+	LastRewardDate = FDateTime::Now();
 
 	ULoginSaveGame* LoginSaveGame = Cast<ULoginSaveGame>(UGameplayStatics::CreateSaveGameObject(ULoginSaveGame::StaticClass()));
 	if (LoginSaveGame)
 	{
-		LoginSaveGame->LastLoginTime = LastLoginDate;
+		LoginSaveGame->LastRewardTime = LastRewardDate;
 		UGameplayStatics::SaveGameToSlot(LoginSaveGame, TEXT("LoginSaveSlot"), 0);
 	}
 }
@@ -79,5 +83,15 @@ void UMyGameInstance::SaveLastLoginTime()
 FRewardDataTable* UMyGameInstance::GetRewardDataTable(int32 Day)
 {
 	return RewardDataTable->FindRow<FRewardDataTable>(*FString::FromInt(Day), TEXT(""));
+}
+
+FShopItemDataTable* UMyGameInstance::GetShopItemDataTable(int32 Index)
+{
+	return ShopItemDataTable->FindRow<FShopItemDataTable>(*FString::FromInt(Index), TEXT(""));
+}
+
+float UMyGameInstance::GetUpdateTime()
+{
+	return UpdateTime;
 }
 

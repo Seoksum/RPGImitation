@@ -40,8 +40,11 @@ public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "MailData")
 	bool IsInventoryItem;
 
-	UPROPERTY(meta = (BindWidget))
-	class UTexture2D* ItemImage;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "MailData")
+	class UItemData* ItemData;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "MailData")
+		class UTexture2D* Thumbnail;
 
 	UPROPERTY()
 	class UMailListWidget* OwningMailListWidget;

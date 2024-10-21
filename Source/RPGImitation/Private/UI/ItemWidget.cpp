@@ -5,6 +5,7 @@
 #include "Components/TextBlock.h"
 #include "Components/Image.h"
 #include "Items/ItemData.h"
+#include "Items/MailData.h"
 
 
 void UItemWidget::NativeOnInitialized()
@@ -18,22 +19,20 @@ void UItemWidget::NativeOnListItemObjectSet(UObject* ListItemObject)
 {
 	IUserObjectListEntry::NativeOnListItemObjectSet(ListItemObject);
 
-	UItemData* Item = Cast<UItemData>(ListItemObject);
-	if (Item == nullptr)	return;
+	UMailData* MailData = Cast<UMailData>(ListItemObject);
+	if (MailData == nullptr)	return;
 
-	SetItemInfo(Item);
+	SetMailInfo(MailData);
 }
 
-void UItemWidget::SetItemInfo(UItemData* InItem)
+void UItemWidget::SetMailInfo(UMailData* InMail)
 {
-	if (nullptr == InItem) return;
-
-	FText Name = FText::FromString(InItem->ItemName);
-	ItemName->SetText(Name);
-
-	UTexture2D* ThumbnailImage = InItem->Thumbnail;
-	ItemImage->SetBrushFromTexture(ThumbnailImage);
+	T_Sender->SetText(FText::FromString(InMail->Sender));
+	T_Title->SetText(FText::FromString(InMail->Title));
+	Img_Item->SetBrushFromTexture(InMail->Thumbnail);
 }
+
+
 
 
 

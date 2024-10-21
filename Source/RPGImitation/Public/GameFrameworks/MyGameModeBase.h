@@ -14,4 +14,12 @@ class RPGIMITATION_API AMyGameModeBase : public AGameModeBase
 {
 	GENERATED_BODY()
 	
+
+public:
+
+	AMyGameModeBase();
+
+	void PawnKilled(class APawn* PawnKilled);
+	void EndGame(bool bIsPlayerWinner);
+
 };
