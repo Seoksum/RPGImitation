@@ -5,7 +5,6 @@
 #include "Items/ShopItemData.h"
 #include "Items/ItemData.h"
 #include "Items/PotionItemData.h"
-#include "Items/WeaponItemData.h"
 #include "Items/NoneConsumableItemData.h"
 #include "Components/Image.h"
 #include "Components/Button.h"

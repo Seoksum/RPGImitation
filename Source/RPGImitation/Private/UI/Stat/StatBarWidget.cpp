@@ -17,6 +17,7 @@ void UStatBarWidget::UpdateHp(float Hp)
 	{
 		PB_HpBar->SetPercent(Hp / PlayerStatComponent->GetMaxHp());
 	}
+
 }
 
 void UStatBarWidget::BindMana(class UStatComponent* StatComp)
@@ -25,8 +26,8 @@ void UStatBarWidget::BindMana(class UStatComponent* StatComp)
 	PlayerStatComponent->OnManaChanged.AddUObject(this, &UStatBarWidget::UpdateMana);
 }
 
-void UStatBarWidget::UpdateMana(float Mana, float MaxMana)
+void UStatBarWidget::UpdateMana(float Mana)
 {
 	if (PlayerStatComponent.IsValid())
-		PB_ManaBar->SetPercent(Mana / MaxMana);
+		PB_ManaBar->SetPercent(Mana / PlayerStatComponent->GetMaxMana());
 }

@@ -3,6 +3,7 @@
 
 #include "Enemies/EnemyAnimInstance.h"
 #include "Enemies/Enemy.h"
+#include "Components/StatComponent.h"
 
 UEnemyAnimInstance::UEnemyAnimInstance()
 {
@@ -12,7 +13,17 @@ UEnemyAnimInstance::UEnemyAnimInstance()
 		AttackMontage = AM.Object;
 	}
 
+}
 
+void UEnemyAnimInstance::NativeInitializeAnimation()
+{
+	Super::NativeInitializeAnimation();
+
+	AEnemy* OwnerEnemy = Cast<AEnemy>(TryGetPawnOwner());
+	if (OwnerEnemy)
+	{
+		Stat = OwnerEnemy->GetStatComponent();
+	}
 }
 
 void UEnemyAnimInstance::NativeUpdateAnimation(float DeltaSeconds)
@@ -28,7 +39,7 @@ void UEnemyAnimInstance::BSNode()
 	if (IsValid(Pawn))
 	{
 		Speed = Pawn->GetVelocity().Size();
-		auto Enemy = Cast<AEnemy>(Pawn);
+		AEnemy* Enemy = Cast<AEnemy>(Pawn);
 		if (Enemy)
 		{
 			SpeedSide = Enemy->GetActorRightVector().Size();
@@ -57,6 +68,6 @@ FName UEnemyAnimInstance::GetAttackMontageName(int32 SectionIndex)
 
 void UEnemyAnimInstance::AnimNotify_AttackHit()
 {
-	EnemyAttackHit.Broadcast();
+	EnemyAttackHit.Broadcast(Stat->GetTotalStat().Attack, HitParticleSystem);
 }
 

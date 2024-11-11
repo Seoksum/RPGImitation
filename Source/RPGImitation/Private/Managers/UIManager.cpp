@@ -13,7 +13,9 @@
 #include "UI/Inventory/InventoryWidget.h"
 #include "UI/Shop/ShopItemListWidget.h"
 #include "UI/Stat/CharacterSkillWidget.h"
-
+#include "UI/Stat/CharacterStatWidget.h"
+#include "UI/Stat/StatBarWidget.h"
+#include "Components/Statcomponent.h"
 
 UUIManager::UUIManager()
 {
@@ -197,12 +199,15 @@ void UUIManager::SetInGameWidget(UUserWidget* InWidget)
 	{
 		InGameWidget = InWidget;
 		CharacterSkillWidget = Cast<UCharacterSkillWidget>(InGameWidget->GetWidgetFromName(TEXT("WBP_CharacterSkillWidget")));
+		CharacterStatWidget = Cast<UCharacterStatWidget>(InGameWidget->GetWidgetFromName(TEXT("WBP_CharacterStatWidget")));
+		StatBarWidget = Cast<UStatBarWidget>(InGameWidget->GetWidgetFromName(TEXT("WBP_PlayerStatBarInGame")));
 	}
 }
 
 void UUIManager::StartSkillAttackQ()
 {
-	if (CharacterSkillWidget) { CharacterSkillWidget->StartAttackQ(); }
+	if (CharacterSkillWidget)
+		CharacterSkillWidget->StartAttackQ();
 }
 
 void UUIManager::StartSkillAttackE()
@@ -213,5 +218,51 @@ void UUIManager::StartSkillAttackE()
 void UUIManager::StartSkillAttackR()
 {
 	if (CharacterSkillWidget) { CharacterSkillWidget->StartAttackR(); }
+}
+
+void UUIManager::UpdateWeaponAttackStat(float WeaponAttack)
+{
+	if (CharacterStatWidget) { CharacterStatWidget->SetWeaponAttackStat(WeaponAttack); }
+}
+
+void UUIManager::UpdatePlayerLevel(int32 PlayerLevel)
+{
+	if (CharacterSkillWidget) { CharacterStatWidget->SetPlayerCurrentLevel(PlayerLevel); }
+}
+
+
+void UUIManager::UpdatePlayerStat(const FStatDataTable& CharacterStat)
+{
+	if (CharacterStatWidget) { CharacterStatWidget->SetPlayerStat(CharacterStat); }
+}
+
+void UUIManager::StatBar_OnAttacked(float Hp)
+{
+	if (!StatBarWidget || !CharacterStatWidget)
+		return;
+
+	StatBarWidget->UpdateHp(Hp);
+	CharacterStatWidget->SetPlayerCurrentHp(Hp);
+}
+
+void UUIManager::StatBar_OnAttacking(float Mana)
+{
+	if (!StatBarWidget || !CharacterStatWidget)
+		return;
+
+	StatBarWidget->UpdateMana(Mana);
+	CharacterStatWidget->SetPlayerCurrentMana(Mana);
+}
+
+void UUIManager::BindWidget(UStatComponent* StatComp)
+{
+	if (StatBarWidget)
+	{
+		StatBarWidget->BindHp(StatComp);
+		StatBarWidget->BindMana(StatComp);
+		StatComp->OnHpChanged.AddUObject(this, &UUIManager::StatBar_OnAttacked);
+		StatComp->OnManaChanged.AddUObject(this, &UUIManager::StatBar_OnAttacking);
+	}
+	
 }
 

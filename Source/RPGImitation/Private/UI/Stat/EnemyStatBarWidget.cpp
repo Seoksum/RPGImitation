@@ -20,4 +20,10 @@ void UEnemyStatBarWidget::UpdateHp(float Hp)
 		PB_HpBar->SetPercent(Hp / EnemyStatComponent->GetMaxHp());
 }
 
+void UEnemyStatBarWidget::BindLevel(int32 InLevel)
+{
+	const FString MyLevel = FString::Printf(TEXT("%d"), InLevel);
+	Text_Level->SetText(FText::FromString(MyLevel));
+}
+
 

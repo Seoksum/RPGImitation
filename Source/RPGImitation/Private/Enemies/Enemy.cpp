@@ -10,8 +10,7 @@
 #include "TimerManager.h"
 #include "Components/CapsuleComponent.h"
 #include "UI/Stat/EnemyStatBarWidget.h"
-//#include "Characters/Character_Parent.h"
-#include "AIController_Enemy.h"
+#include "AI/AIController_Enemy.h"
 #include "Enemies/EnemyAnimInstance.h"
 #include "GameFrameworks/MyGameModeBase.h"
 
@@ -44,14 +43,20 @@ AEnemy::AEnemy()
 	IsDeath = false;
 	MaxAttackIndex = 3;
 	AttackRange = 500.f;
-	AttackPower = 20;
+	Level = 1;
+
+	DisplayRange = 1200.0f;
 }
 
 void AEnemy::BeginPlay()
 {
 	Super::BeginPlay();
 
-	Stat->SetLevelStat(1);
+	if (Stat)
+	{
+		Stat->SetLevelStat(Level);
+		Stat->OnHealthChanged.AddUObject(this, &AEnemy::OnHealthChanged);
+	}
 }
 
 void AEnemy::PostInitializeComponents()
@@ -70,6 +75,23 @@ void AEnemy::PostInitializeComponents()
 	if (EnemyWidget)
 	{
 		EnemyWidget->BindHp(Stat);
+		EnemyWidget->BindLevel(Level);
+	}
+}
+
+void AEnemy::Tick(float DeltaTime)
+{
+	Super::Tick(DeltaTime);
+
+	APlayerController* PlayerController = GetWorld()->GetFirstPlayerController();
+	if (PlayerController)
+	{
+		APawn* PlayerPawn = PlayerController->GetPawn();
+		if (PlayerPawn)
+		{
+			float Distance = FVector::Dist(PlayerPawn->GetActorLocation(), GetActorLocation());
+			HpBar->SetHiddenInGame(Distance > DisplayRange);
+		}
 	}
 }
 
@@ -84,35 +106,37 @@ void AEnemy::Attack()
 	AttackIndex = (AttackIndex + 1) % MaxAttackIndex;
 }
 
-float AEnemy::TakeDamage(float DamageAmount, FDamageEvent const& DamageEvent, AController* EventInstigator, AActor* DamageCauser)
+//float AEnemy::TakeDamage(float DamageAmount, FDamageEvent const& DamageEvent, AController* EventInstigator, AActor* DamageCauser)
+//{
+//	Super::TakeDamage(DamageAmount, DamageEvent, EventInstigator, DamageCauser);
+//	Stat->OnAttacked(DamageAmount);
+//	return DamageAmount;
+//}
+
+void AEnemy::OnHealthChanged(float Health, float HealthDelta, const UDamageType* DamageType, AController* InstigatedBy, AActor* DamageCauser)
 {
-	Super::TakeDamage(DamageAmount, DamageEvent, EventInstigator, DamageCauser);
-
-	Stat->OnAttacked(DamageAmount);
-
-	return DamageAmount;
-}
-
-void AEnemy::OnDeath_Implementation()
-{
-	if (IsDeath)
+	if (Health >= 0.1f || IsDeath)
 		return;
 
 	IsDeath = true;
 	AMyGameModeBase* MyGameMode = Cast<AMyGameModeBase>(GetWorld()->GetAuthGameMode());
 	if (MyGameMode)
 	{
+		MyGameMode->IncreaseExp(InstigatedBy, EnemyExp);
 		MyGameMode->PawnKilled(this);
 	}
+	//OnDeath_Implementation();
+}
 
+void AEnemy::OnDeath_Implementation()
+{
 	DetachFromControllerPendingDestroy();
 	GetCapsuleComponent()->SetCollisionEnabled(ECollisionEnabled::NoCollision);
 	GetMesh()->SetCollisionEnabled(ECollisionEnabled::NoCollision);
 	UGameplayStatics::PlaySoundAtLocation(this, DeathSound, GetActorLocation());
-
 }
 
-void AEnemy::AttackCheck()
+void AEnemy::AttackCheck(float Damage, class UParticleSystem* HitParticleSystem)
 {
 	FHitResult HitResult;
 	FCollisionQueryParams Params(NAME_None, false, this);
@@ -126,7 +150,8 @@ void AEnemy::AttackCheck()
 	if (bResult)
 	{
 		FDamageEvent DamageEvent;
-		HitResult.Actor->TakeDamage(AttackPower, DamageEvent, GetController(), this);
+		HitResult.Actor->TakeDamage(Damage, DamageEvent, GetController(), this);
+		UGameplayStatics::SpawnEmitterAtLocation(GetWorld(), HitParticleSystem, HitResult.Actor->GetTransform());
 	}
 
 }
@@ -135,6 +160,12 @@ void AEnemy::OnAttackMontageEnded(UAnimMontage* Montage, bool bInterrupted)
 {
 	IsAttacking = false;
 	OnAttackEnd.Broadcast();
+}
+
+UStatComponent* AEnemy::GetStatComponent()
+{
+	if (nullptr == Stat) { Stat = NewObject<UStatComponent>(); }
+	return Stat;
 }
 
 

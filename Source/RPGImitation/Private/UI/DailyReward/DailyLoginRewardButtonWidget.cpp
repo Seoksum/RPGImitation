@@ -11,7 +11,6 @@
 #include "Items/MailData.h"
 #include "Items/ItemData.h"
 #include "Items/PotionItemData.h"
-#include "Items/WeaponItemData.h"
 #include "Items/NoneConsumableItemData.h"
 #include "Managers/UIManager.h"
 #include "Characters/MyPlayerController.h"

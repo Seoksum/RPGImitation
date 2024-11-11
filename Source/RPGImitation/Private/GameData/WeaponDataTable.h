@@ -21,5 +21,8 @@ public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	FString MeshPath;
 
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	EWeaponType WeaponType;
+
 
 };

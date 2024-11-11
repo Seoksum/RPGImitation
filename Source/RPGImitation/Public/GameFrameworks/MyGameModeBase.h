@@ -19,7 +19,12 @@ public:
 
 	AMyGameModeBase();
 
+	virtual void BeginPlay() override;
+
+	void IncreaseExp(AController* KillerController, float Exp);
+
 	void PawnKilled(class APawn* PawnKilled);
+
 	void EndGame(bool bIsPlayerWinner);
 
 };

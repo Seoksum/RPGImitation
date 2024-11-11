@@ -2,7 +2,9 @@
 1,HpPotion,Texture2D'/Game/Contents/Images/Items/Potions/potion12.potion12',HP 증가,ITEM_Consumable,CONSUMABLE_HealthPotion,NONECONSUMABLE_None,300
 2,ManaPotion,Texture2D'/Game/Contents/Images/Items/Potions/potion11.potion11',Mana 증가,ITEM_Consumable,CONSUMABLE_ManaPotion,NONECONSUMABLE_None,300
 3,Sword2,Texture2D'/Game/Contents/Images/Items/Weapons/ShopSword1.ShopSword1',공격력 +10,ITEM_NoneConsumable,CONSUMABLE_None,NONECONSUMABLE_Weapon,4000
-4,Sword3,Texture2D'/Game/Contents/Images/Items/Weapons/ShopSword2.ShopSword2',공격력 +20,ITEM_NoneConsumable,CONSUMABLE_None,NONECONSUMABLE_Weapon,5000
+4,Sword3,Texture2D'/Game/Contents/Images/Items/Weapons/ShopSword2.ShopSword2',공격력 +10,ITEM_NoneConsumable,CONSUMABLE_None,NONECONSUMABLE_Weapon,5000
 5,HeadAcc1,Texture2D'/Game/Contents/Images/Items/Acc/HeadAcc1.HeadAcc1',방어력 +10,ITEM_NoneConsumable,CONSUMABLE_None,NONECONSUMABLE_Accessory,5000
 6,HeadAcc2,Texture2D'/Game/Contents/Images/Items/Acc/HeadAcc2.HeadAcc2',방어력 +20,ITEM_NoneConsumable,CONSUMABLE_None,NONECONSUMABLE_Accessory,7000
 7,BagAcc1,Texture2D'/Game/Contents/Images/Items/Acc/BagAcc1.BagAcc1',방어력 +10,ITEM_NoneConsumable,CONSUMABLE_None,NONECONSUMABLE_Accessory,4500
+8,Bow1,Texture2D'/Game/Contents/Images/Items/Weapons/Bow.Bow',공격력 + 10,ITEM_NoneConsumable,CONSUMABLE_None,NONECONSUMABLE_Weapon,6000
+9,Gun1,Texture2D'/Game/Contents/Images/Items/Weapons/Gun.Gun',공격력 + 15,ITEM_NoneConsumable,CONSUMABLE_None,NONECONSUMABLE_Weapon,7000

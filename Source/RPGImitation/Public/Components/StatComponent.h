@@ -4,11 +4,16 @@
 
 #include "CoreMinimal.h"
 #include "Components/ActorComponent.h"
+#include "GameData/StatDataTable.h"
 #include "StatComponent.generated.h"
 
 DECLARE_MULTICAST_DELEGATE_OneParam(FOnHpChanged, float);
-DECLARE_MULTICAST_DELEGATE_TwoParams(FOnManaChanged, float, float);
+DECLARE_MULTICAST_DELEGATE_OneParam(FOnManaChanged, float);
+DECLARE_MULTICAST_DELEGATE_FiveParams(FOnHealthChanged, float, float, const class UDamageType*, class AController*, AActor*);
 DECLARE_MULTICAST_DELEGATE(FOnDeath);
+DECLARE_MULTICAST_DELEGATE_OneParam(FOnPlayerLevelUp, int32);
+DECLARE_MULTICAST_DELEGATE_OneParam(FOnStatChanged, const FStatDataTable&);
+DECLARE_MULTICAST_DELEGATE_OneParam(FOnAddWeaponAttack, float);
 
 
 
@@ -35,11 +40,18 @@ public:
 
 	void SetMana(float Mana);
 
+	void SetExp(int32 Exp);
+
 	void OnAttacked(float DamageAmount);
 	void OnAttacking(float ManaAmount);
 
 	void UseHpPotion(float Amount);
 	void UseManaPotion(float Amount);
+
+	void SetWeaponStat(const FStatDataTable& NewWeaponStat);
+
+	UFUNCTION()
+	void TakeDamage(AActor* DamagedActor, float Damage, const class UDamageType* DamageType, class AController* InstigatedBy, AActor* DamageCauser);
 
 
 public:
@@ -50,6 +62,13 @@ public:
 
 	FOnDeath OnDeath;
 
+	FOnPlayerLevelUp OnPlayerLevelUp;
+
+	FOnStatChanged OnStatChanged;
+
+	FOnAddWeaponAttack OnAddWeaponAttack;
+
+	FOnHealthChanged OnHealthChanged;
 
 public:
 
@@ -60,7 +79,7 @@ public:
 	FORCEINLINE float GetCurrentHp() const { return CurrentHp; }
 	FORCEINLINE float GetCurrentMana() const { return CurrentMana; }
 
-	//FORCEINLINE FCharacterStat GetTotalStat() const { return BaseStat + WeaponStat; }
+	FORCEINLINE FStatDataTable GetTotalStat() const { return BaseStat + WeaponStat; }
 
 
 
@@ -80,13 +99,22 @@ protected:
 	float CurrentMana;
 
 	UPROPERTY(Transient, VisibleInstanceOnly, Category = "Stat")
-	float CurrentLevel;
+	float CurrentExp;
 
-	//UPROPERTY(Transient, VisibleInstanceOnly, Category = "Stat", Meta = (AllowPrivateAccess = "true"))
-	//FCharacterStat BaseStat;
-	//
-	//UPROPERTY(Transient, VisibleInstanceOnly, Category = "Stat", Meta = (AllowPrivateAccess = "true"))
-	//FCharacterStat WeaponStat;
+	UPROPERTY(Transient, VisibleInstanceOnly, Category = "Stat")
+	float CurrentLevel;
+	
+	UPROPERTY(EditAnywhere, Category = "Stat")
+	float MaxLevel;
+
+	UPROPERTY(EditAnywhere, Category = "State")
+	bool bIsDead;
+
+	UPROPERTY(Transient, VisibleInstanceOnly, Category = "Stat", Meta = (AllowPrivateAccess = "true"))
+	FStatDataTable BaseStat;
+
+	UPROPERTY(Transient, VisibleInstanceOnly, Category = "Stat", Meta = (AllowPrivateAccess = "true"))
+	FStatDataTable WeaponStat;
 
 
 		

@@ -19,6 +19,8 @@ public:
 	void BindHp(class UStatComponent* StatComp);
 	void UpdateHp(float Hp);
 
+	void BindLevel(int32 InLevel);
+
 
 public:
 	TWeakObjectPtr<class UStatComponent> EnemyStatComponent;
@@ -26,6 +28,7 @@ public:
 	UPROPERTY(meta = (BindWidget))
 	class UProgressBar* PB_HpBar;
 
-
+	UPROPERTY(meta = (BindWidget))
+	class UTextBlock* Text_Level;
 
 };

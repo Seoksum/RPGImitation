@@ -3,7 +3,7 @@
 
 #include "AI/BTTask_Attack.h"
 #include "Enemies/Enemy.h"
-#include "AIController_Enemy.h"
+#include "AI/AIController_Enemy.h"
 #include "BehaviorTree/BlackboardComponent.h"
 #include "Kismet/KismetMathLibrary.h"
 

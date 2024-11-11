@@ -26,6 +26,9 @@ public:
 	UFUNCTION()
 	void OnClickUseItem();
 
+	UFUNCTION()
+	FText GetToolTipUseButton();
+
 
 protected:
 
@@ -39,7 +42,7 @@ protected:
 	class UItemData* ItemData;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Item")
-		int32 GoldAmount;
+	int32 GoldAmount;
 	
 
 

@@ -3,6 +3,9 @@
 
 #include "Components/StatComponent.h"
 #include "Interfaces/DeathInterface.h"
+#include "Kismet/GameplayStatics.h"
+#include "GameFramework/Actor.h"
+#include "GameFrameworks/MyGameInstance.h"
 
 // Sets default values for this component's properties
 UStatComponent::UStatComponent()
@@ -16,17 +19,37 @@ void UStatComponent::BeginPlay()
 {
 	Super::BeginPlay();
 
+	AActor* MyOwner = GetOwner();
+	if (MyOwner)
+	{
+		MyOwner->OnTakeAnyDamage.AddDynamic(this, &UStatComponent::TakeDamage);
+	}
+
+	MaxLevel =6;
 	CurrentLevel = 1;
 }
 
 void UStatComponent::SetLevelStat(int32 NewLevel)
 {
-	//MyGameInstance = Cast<UMyGameInstance>(UGameplayStatics::GetGameInstance(GetWorld()));
-	//BaseStat = MyGameInstance->GetCharacterStat(CurrentLevel);
-	MaxHp = 200;
-	MaxMana = 200;
+	CurrentLevel = FMath::Clamp<float>(NewLevel, 1, MaxLevel);
+	UMyGameInstance* MyGameInstance = Cast<UMyGameInstance>(UGameplayStatics::GetGameInstance(GetWorld()));
+	BaseStat = MyGameInstance->GetCharacterStat(CurrentLevel);
+	MaxHp = BaseStat.MaxHp;
+	MaxMana = BaseStat.MaxMana;
 	SetHp(MaxHp);
 	SetMana(MaxHp);
+	OnStatChanged.Broadcast(GetTotalStat());
+}
+
+void UStatComponent::TakeDamage(AActor* DamagedActor, float Damage, const class UDamageType* DamageType,
+	class AController* InstigatedBy, AActor* DamageCauser)
+{
+	if (bIsDead) return;
+
+	CurrentHp = FMath::Clamp(CurrentHp - Damage, 0.0f, MaxHp);
+	bIsDead = CurrentHp <= 0.f;
+	SetHp(CurrentHp);
+	OnHealthChanged.Broadcast(CurrentHp, Damage, DamageType, InstigatedBy, DamageCauser);
 }
 
 void UStatComponent::SetHp(float Hp)
@@ -47,9 +70,21 @@ void UStatComponent::SetHp(float Hp)
 void UStatComponent::SetMana(float Mana)
 {
 	CurrentMana = FMath::Clamp(Mana, 0.f, MaxMana);
-	OnManaChanged.Broadcast(CurrentMana, GetMaxMana());
+	OnManaChanged.Broadcast(CurrentMana);
 }
 
+void UStatComponent::SetExp(int32 Exp)
+{
+	CurrentExp += Exp;
+	float LevelExp = BaseStat.Exp;
+	if (LevelExp <= CurrentExp)
+	{
+		CurrentLevel = FMath::Clamp<int32>(CurrentLevel + 1, 1, MaxLevel);
+		OnPlayerLevelUp.Broadcast(static_cast<int32>(CurrentLevel));
+		CurrentExp -= LevelExp;
+	}
+
+}
 void UStatComponent::OnAttacked(float DamageAmount)
 {
 	SetHp(CurrentHp - DamageAmount);
@@ -70,4 +105,9 @@ void UStatComponent::UseManaPotion(float Amount)
 	SetMana(CurrentMana + Amount);
 }
 
+void UStatComponent::SetWeaponStat(const FStatDataTable& NewWeaponStat)
+{
+	WeaponStat = NewWeaponStat;
+	OnAddWeaponAttack.Broadcast(WeaponStat.Attack);
+}
 

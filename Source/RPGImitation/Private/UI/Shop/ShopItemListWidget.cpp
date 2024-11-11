@@ -14,7 +14,7 @@ void UShopItemListWidget::NativeConstruct()
 {
 	Super::NativeConstruct();
 
-	ItemCount = 8;
+	ItemCount = 10;
 
 	if (!IsShopCreated)
 	{

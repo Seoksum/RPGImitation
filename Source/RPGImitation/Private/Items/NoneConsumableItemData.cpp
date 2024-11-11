@@ -12,7 +12,7 @@ void UNoneConsumableItemData::UseItem(class ARPGImitationCharacter* Character)
 	switch (NoneConsumableType)
 	{
 	case ENoneConsumableType::NONECONSUMABLE_Weapon:
-		Character->EquipWeaponItem(ItemName);
+		Character->EquipWeaponItem(ItemName, GetSocketName());
 		break;
 	case ENoneConsumableType::NONECONSUMABLE_Accessory:
 		Character->EquipAccessory(ItemName, GetSocketName());
@@ -33,4 +33,29 @@ FString UNoneConsumableItemData::GetSocketName()
 	}
 	SocketName += "Socket";
 	return SocketName;
+}
+
+void UNoneConsumableItemData::InitializeWorld(UWorld* InWorld)
+{
+	World = InWorld;
+}
+
+void UNoneConsumableItemData::SetOwner(ARPGImitationCharacter* InOwner)
+{
+	MyOwner = InOwner;
+}
+
+
+FStatDataTable UNoneConsumableItemData::GetWeaponStat()
+{
+	return WeaponStat;
+}
+
+void UNoneConsumableItemData::Attack()
+{
+
+}
+
+void UNoneConsumableItemData::Attack(int32 damage, float TraceDistance, class UParticleSystem* Particle)
+{
 }

@@ -29,3 +29,12 @@ enum class ENoneConsumableType : uint8
     NONECONSUMABLE_Accessory UMETA(DisplayName = "Accessory"),
     NONECONSUMABLE_None      UMETA(DisplayName = "None")
 };
+
+UENUM(BlueprintType)
+enum class EWeaponType : uint8
+{
+    WEAPON_Sword UMETA(DisplayName = "Sword"),
+    WEAPON_Bow UMETA(DisplayName = "Bow"),
+    WEAPON_Gun    UMETA(DisplayName = "Gun"),
+    WEAPON_None      UMETA(DisplayName = "None")
+};

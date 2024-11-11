@@ -5,6 +5,7 @@
 #include "CoreMinimal.h"
 #include "GameFramework/Character.h"
 #include "Interfaces/DeathInterface.h"
+#include "GameData/GameEnums.h"
 #include "RPGImitationCharacter.generated.h"
 
 UCLASS(config=Game)
@@ -36,6 +37,8 @@ protected:
 
 	virtual void PostInitializeComponents() override;
 
+	virtual void Tick(float DeltaTime) override;
+
 	void MoveForward(float Value);
 
 	void MoveRight(float Value);
@@ -53,9 +56,11 @@ public:
 	FORCEINLINE class USpringArmComponent* GetCameraBoom() const { return CameraBoom; }
 	FORCEINLINE class UCameraComponent* GetFollowCamera() const { return FollowCamera; }
 
-	virtual float TakeDamage(float DamageAmount, struct FDamageEvent const& DamageEvent, class AController* EventInstigator, AActor* DamageCauser) override;
+	//virtual float TakeDamage(float DamageAmount, struct FDamageEvent const& DamageEvent, class AController* EventInstigator, AActor* DamageCauser) override;
 
 	void Attack();
+	void AttackEnd();
+
 	void AttackQ();
 	void AttackE();
 	void AttackR();
@@ -67,6 +72,10 @@ public:
 	void OnAttackMontageEnded(UAnimMontage* Montage, bool bInterrupted);
 
 	virtual void OnDeath_Implementation() override;
+
+	void IncreaseExp(int32 Exp);
+
+	void LevelUp(int32 PlayerLevel);
 
 
 protected:
@@ -104,19 +113,39 @@ protected:
 	bool IsAttackingQ = false;
 
 	UPROPERTY(VisibleAnywhere, Category = "Attack")
-		bool IsAttackingE = false;
+	bool IsAttackingE = false;
 
 	UPROPERTY(VisibleAnywhere, Category = "Attack")
-		bool IsAttackingR = false;
+	bool IsAttackingR = false;
 
 	UPROPERTY(EditAnywhere, Category = "Attack")
-	int32 MaxAttackIndex;
+	uint8 MaxAttackIndex;
 
 	UPROPERTY(EditAnywhere, Category = "Attack")
-	int32 AttackIndex = 0;
+	uint8 AttackIndex = 0;
 
 	UPROPERTY(VisibleAnywhere, Category = "State")
 	bool IsDeath;
+
+	UPROPERTY(EditAnywhere, Category = "Attack")
+	int32 CurrentLevel;
+
+	UPROPERTY(EditAnywhere, Category = "Attack")
+	float RequiredMana;
+
+	UPROPERTY(EditAnywhere, Category = "CameraZoom")
+	bool bWantsToZoom;
+
+	UPROPERTY(EditDefaultsOnly, Category = "CameraZoom")
+	float ZoomedFOV;
+
+	UPROPERTY(EditDefaultsOnly, Category = "CameraZoom")
+	float DefaultFOV;
+
+	// 보간 속도를 0.1 ~ 100 사이 값
+	UPROPERTY(EditDefaultsOnly, Category = "CameraZoom", meta = (ClampMin = 0.1f, ClampMax = 100.f))
+	float ZoomInterpSpeed;
+
 
 
 public:
@@ -127,17 +156,27 @@ public:
 
 	class UCurrencySystem* GetCurrencySystem();
 
+	class UStatComponent* GetStatComponent();
+
+	bool GetIsPlayerDead();
+
 	void UseInventoryItem(class UItemData* InItemData);
 
+
 	// 무기
-	void EquipWeaponItem(const FString& WeaponName);
-	USkeletalMesh* LoadWeaponMesh(FString WeaponName);
+	void EquipWeaponItem(const FString& WeaponName, FString InSocketName);
+
+	//USkeletalMesh* LoadWeaponMesh(FString WeaponName);
+	TPair<USkeletalMesh*,EWeaponType> LoadWeaponMesh(FString WeaponName);
 
 	// 악세사리 착용 
 	void EquipAccessory(FString ItemName, FString InSocketName);
 	UStaticMesh* LoadAccMesh(FString AccName);
 
+	void SwitchWeapon(int32 InWeaponIndex, class UWeaponItemDataAsset* WeaponItem); // 무기 교체 UI
 
+
+public:
 
 	// 골드
 	void AddGold(int32 Amount);
@@ -153,8 +192,22 @@ public:
 	void EndAttackE();
 	void EndAttackR();
 
+	EWeaponType GetCurrentWeaponType();
+
+	FVector GetWeaponMeshSocketLocation(const FName& SocketName);
+
+	void DrinkHpPotion(float Amount);
+	void DrinkManaPotion(float Amount);
+	void DrinkExpPotion(float Amount);
+
+	void CameraZoom(const float Value);
+	void BeginZoom();
+	void EndZoom();
 
 protected:
+
+	UPROPERTY(EditDefaultsOnly, Category = "Weapon")
+	EWeaponType CurrentWeaponType;
 
 	UPROPERTY(VisibleAnywhere,BlueprintReadOnly,Category="Weapon")
 	class AWeaponActor* CurrentWeapon;
@@ -167,6 +220,21 @@ protected:
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Weapon")
 	class AAccessoryActor* CurrentBagAcc;
+
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Weapon")
+		class UWeaponItemData_Sword* WeaponItem_Sword;
+
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Weapon")
+	class UWeaponItemData_Gun* WeaponItem_Gun;
+
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Weapon")
+	class UWeaponItemData_Bow* WeaponItem_Bow;
+
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Particle")
+		class UParticleSystem* LevelupEffect;
+
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Sound")
+		class USoundBase* LevelupSound;
 
 
 

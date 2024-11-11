@@ -4,6 +4,7 @@
 
 #include "CoreMinimal.h"
 #include "UObject/NoExportTypes.h"
+#include "GameData/StatDataTable.h"
 #include "UIManager.generated.h"
 
 /**
@@ -37,38 +38,44 @@ public:
 
 protected: 
 
-    UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "UI")
+    UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Inventory")
     class UItemList* LV_InventoryWidget;
 
-    UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "UI")
+    UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Inventory")
     class UScrollBoxInventoryWidget* SB_InventoryWidget;
 
-    UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "UI")
+    UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Mail")
     class UMailListWidget* MailListWidget;
 
-    UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "UI")
+    UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Mail")
     class USendMailListWidget* SendMailListWidget;
 
-    UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "UI")
+    UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Mail")
     class UFullMailWidget* FullMailWidget;
 
-    UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "UI")
+    UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Reward")
     class UDailyLoginRewardWidget* DailyRewardWidget;
 
-    UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "UI")
+    UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Chat")
         class UChatWidget* ChatWidget;
 
-    UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "UI")
+    UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Inventory")
         class UInventoryWidget* InventoryWidget;
 
-    UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "UI")
+    UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Shop")
         class UShopItemListWidget* ShopWidget;
 
-    UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "UI")
+    UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "InGame")
     UUserWidget* InGameWidget;
 
-    UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "UI")
+    UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "InGame")
     class UCharacterSkillWidget* CharacterSkillWidget;
+
+    UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "InGame")
+    class UCharacterStatWidget* CharacterStatWidget;
+
+    UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "InGame")
+       class UStatBarWidget* StatBarWidget;
 
     UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "UI")
         UUserWidget* WinScreenWidget;
@@ -132,4 +139,18 @@ public:
     void StartSkillAttackQ();
     void StartSkillAttackE();
     void StartSkillAttackR();
+
+    void UpdateWeaponAttackStat(float WeaponAttack);
+
+    void UpdatePlayerLevel(int32 PlayerLevel);
+
+    void UpdatePlayerStat(const FStatDataTable& CharacterStat);
+
+    void StatBar_OnAttacked(float Hp);
+
+    void StatBar_OnAttacking(float Mana);
+
+    void BindWidget(class UStatComponent* StatComp);
+
+
 };

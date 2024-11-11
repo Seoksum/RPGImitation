@@ -27,5 +27,7 @@ public:
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Weapon")
 	USkeletalMeshComponent* WeaponMeshComponent;
 
+	FVector GetMuzzleSocketLocation(const FName& SocketName);
+
 
 };

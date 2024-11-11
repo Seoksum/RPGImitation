@@ -12,7 +12,7 @@
 
 
 
-DECLARE_MULTICAST_DELEGATE(FOnEnemyAttackHit);
+DECLARE_MULTICAST_DELEGATE_TwoParams(FOnEnemyAttackHit, float, class UParticleSystem*);
 
 UCLASS()
 class RPGIMITATION_API UEnemyAnimInstance : public UAnimInstance
@@ -22,6 +22,8 @@ class RPGIMITATION_API UEnemyAnimInstance : public UAnimInstance
 public:
 
 	UEnemyAnimInstance();
+
+	virtual void NativeInitializeAnimation() override;
 
 	virtual void NativeUpdateAnimation(float DeltaSeconds) override;
 
@@ -39,7 +41,8 @@ private:
 
 
 
-private:
+protected:
+
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Meta = (AllowPrivateAccess = true))
 	float Speed;
 
@@ -50,12 +53,16 @@ private:
 	float SpeedForward;
 
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Meta = (AllowPrivateAccess = true))
-		bool IsDeath;
-
+	bool IsDeath;
 
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Attack", Meta = (AllowPrivateAccess = true))
 	UAnimMontage* AttackMontage;
 
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Stat")
+	class UStatComponent* Stat;
+
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Meta = (AllowPrivateAccess = true))
+		class UParticleSystem* HitParticleSystem;
 
 
 public:

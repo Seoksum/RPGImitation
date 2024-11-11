@@ -7,7 +7,6 @@
 #include "Components/TextBlock.h"
 #include "Items/ItemData.h"
 #include "Items/PotionItemData.h"
-#include "Items/WeaponItemData.h"
 #include "Items/NoneConsumableItemData.h"
 #include "../RPGImitationCharacter.h"
 
@@ -19,6 +18,7 @@ void UInventoryItemWidget::NativeConstruct()
 
 	Btn_ItemButton->OnClicked.RemoveDynamic(this, &UInventoryItemWidget::OnClickUseItem);
 	Btn_ItemButton->OnClicked.AddDynamic(this, &UInventoryItemWidget::OnClickUseItem);
+	//Btn_ItemButton->ToolTipTextDelegate.BindUFunction(this, FName("GetToolTipUseButton"));
 
 	GoldAmount = 500;
 }
@@ -28,6 +28,11 @@ void UInventoryItemWidget::SetItemInfo(UItemData* InItem)
 	ItemData = InItem;
 	if (ItemData)
 		Img_ItemImage->SetBrushFromTexture(ItemData->Thumbnail);
+}
+
+FText UInventoryItemWidget::GetToolTipUseButton()
+{
+	return (("{0}"), FText::FromString(ItemData->ItemName));
 }
 
 void UInventoryItemWidget::OnClickUseItem()
@@ -52,9 +57,7 @@ void UInventoryItemWidget::OnClickUseItem()
 				if (NoneConsumableItem)
 				{
 					NoneConsumableItem->UseItem(Player);
-					UE_LOG(LogTemp, Log, TEXT("NoneConsumableItem Name : %s"), *NoneConsumableItem->ItemName);
 				}
-				UE_LOG(LogTemp, Log, TEXT("Item Type is ITEM_NoneConsumable"));
 			}
 		}
 		

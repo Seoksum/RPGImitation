@@ -32,7 +32,6 @@ void UInventoryComponent::AddItem(UItemData* Item)
 
 	ItemArray.Add(Item);
 	OnInventoryUpdated.Broadcast();
-	UE_LOG(LogTemp, Log, TEXT("[%d]Item Name : %s"), ItemArray.Num(), *Item->ItemName);
 }
 
 void UInventoryComponent::RemoveItem(UItemData* Item)

@@ -25,8 +25,13 @@ void AWeaponActor::AttachWeaponToSocket(class ARPGImitationCharacter* Character,
 	{
 		USkeletalMeshComponent* CharacterMesh = Character->GetMesh();
 		WeaponMeshComponent->SetSkeletalMesh(InWeaponMesh);
-		WeaponMeshComponent->AttachToComponent(CharacterMesh, FAttachmentTransformRules::SnapToTargetNotIncludingScale, SocketName);
+		WeaponMeshComponent->AttachToComponent(CharacterMesh, FAttachmentTransformRules::SnapToTargetIncludingScale, SocketName);
 	}
+	//SnapToTargetNotIncludingScale
 }
 
 
+FVector AWeaponActor::GetMuzzleSocketLocation(const FName& SocketName)
+{
+	return WeaponMeshComponent->GetSocketLocation(SocketName);
+}

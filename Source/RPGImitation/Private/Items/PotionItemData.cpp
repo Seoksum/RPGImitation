@@ -6,7 +6,7 @@
 
 UPotionItemData::UPotionItemData()
 {
-
+	PotionAmount = 10.f;
 }
 
 void UPotionItemData::UseItem(class ARPGImitationCharacter* Character)
@@ -16,15 +16,15 @@ void UPotionItemData::UseItem(class ARPGImitationCharacter* Character)
 	switch (ConsumableType)
 	{
 	case EConsumableType::CONSUMABLE_HealthPotion:
-		GEngine->AddOnScreenDebugMessage(-1, 15.f, FColor::Red, FString(TEXT("Drink Hp Potion")));
+		Character->DrinkHpPotion(PotionAmount);
 		break;
 
 	case EConsumableType::CONSUMABLE_ManaPotion:
-		GEngine->AddOnScreenDebugMessage(-1, 15.f, FColor::Blue, FString(TEXT("Drink Mana Potion")));
+		Character->DrinkManaPotion(PotionAmount);
 		break;
 
 	case EConsumableType::CONSUMABLE_ExpPotion:
-		GEngine->AddOnScreenDebugMessage(-1, 15.f, FColor::Green, FString(TEXT("Drink Exp Potion")));
+		Character->DrinkExpPotion(PotionAmount);
 		break;
 
 	case EConsumableType::CONSUMABLE_None:

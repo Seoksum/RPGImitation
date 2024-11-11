@@ -13,6 +13,7 @@ UMyAnimInstance::UMyAnimInstance()
 	AttackRange = 500.f;
 	AttackPower = 30.f;
 
+	WeaponType = EWeaponType::WEAPON_None;
 }
 
 void UMyAnimInstance::NativeInitializeAnimation()
@@ -22,7 +23,7 @@ void UMyAnimInstance::NativeInitializeAnimation()
 	ARPGImitationCharacter* PlayerCharacter = Cast<ARPGImitationCharacter>(TryGetPawnOwner());
 	if (PlayerCharacter)
 	{
-		//Stat = PlayerCharacter->GetStatComponent();
+		Stat = PlayerCharacter->GetStatComponent();
 	}
 }
 
@@ -36,17 +37,17 @@ void UMyAnimInstance::NativeUpdateAnimation(float DeltaSeconds)
 	{
 		Speed = Character->GetVelocity().Size();
 		Direction = CalculateDirection(Character->GetVelocity(), Character->GetActorRotation());
-		IsFalling = Character->GetMovementComponent()->IsFalling();
+		IsFalling = Character->GetMovementComponent()->IsFalling();	
 	}
 
-	// 플레이어 추가 상태
-	//IPlayerStateInterface* PlayerState = Cast<IPlayerStateInterface>(TryGetPawnOwner());
-	//if (PlayerState)
-	//{
-	//	IsDeath = PlayerState->GetIsDeath();
-	//}
-}
 
+	ARPGImitationCharacter* PlayerCharacter = Cast<ARPGImitationCharacter>(TryGetPawnOwner());
+	if (PlayerCharacter)
+	{
+		WeaponType = PlayerCharacter->GetCurrentWeaponType();
+		IsDeath = PlayerCharacter->GetIsPlayerDead();
+	}
+}
 
 void UMyAnimInstance::PlayAttackMontage()
 {
@@ -68,6 +69,11 @@ void UMyAnimInstance::PlayAttackMontageR()
 	Montage_Play(AttackMontage_R, 1.f);
 }
 
+void UMyAnimInstance::PlayBowAttackMontage()
+{
+	Montage_Play(BowAttackMontage, 1.f);
+}
+
 void UMyAnimInstance::JumpToSection(int32 SectionIndex)
 {
 	FName Name = GetAttackMontageName(SectionIndex);
@@ -82,29 +88,26 @@ FName UMyAnimInstance::GetAttackMontageName(int32 SectionIndex)
 void UMyAnimInstance::AnimNotify_AttackHit()
 {
 	TraceDistance = AttackRange;
-	OnAttackHit.Broadcast(AttackPower, TraceDistance, AttackParticle);
+	OnAttackHit.Broadcast(Stat->GetTotalStat().Attack, TraceDistance, EnemyHitParticle);
 }
 
 void UMyAnimInstance::AnimNotify_AttackHit_Q()
 {
 
 	TraceDistance = AttackRange * 1.2f;
-	OnAttackHit_Q.Broadcast(AttackPower * 1.2f, TraceDistance, AttackParticleQ);
+	OnAttackHit_Q.Broadcast(Stat->GetTotalStat().AttackQ, TraceDistance, EnemyHitParticle);
 }
 
 void UMyAnimInstance::AnimNotify_AttackHit_E()
 {
-
 	TraceDistance = AttackRange * 1.5f;
-	OnAttackHit_E.Broadcast(AttackPower * 1.5f, TraceDistance, AttackParticleE);
-
+	OnAttackHit_E.Broadcast(Stat->GetTotalStat().AttackE , TraceDistance, EnemyHitParticle);
 }
 
 void UMyAnimInstance::AnimNotify_AttackHit_R()
 {
-
 	TraceDistance = AttackRange * 2.f;
-	OnAttackHit_R.Broadcast(AttackPower * 2.f, TraceDistance, nullptr);
+	OnAttackHit_R.Broadcast(Stat->GetTotalStat().AttackR , TraceDistance, EnemyHitParticle);
 
 }
 

@@ -22,6 +22,21 @@ UMyGameInstance::UMyGameInstance()
 		ShopItemDataTable = ShopItemDataPathObject.Object;
 	}
 
+	static ConstructorHelpers::FObjectFinder<UDataTable> CharacterStatDataTable(TEXT("DataTable'/Game/Contents/Data/CharacterStatDataTable.CharacterStatDataTable'"));
+
+	if (CharacterStatDataTable.Object)
+	{
+		const UDataTable* StatDataTable = CharacterStatDataTable.Object;
+
+		TArray<FStatDataTable*> CharacterStats;
+		StatDataTable->GetAllRows<FStatDataTable>(TEXT("GetAllRows"), CharacterStats);
+		for (int32 i = 0; i < CharacterStats.Num(); ++i)
+		{
+			CharacterStatTables.Add(*CharacterStats[i]);
+		}
+	}
+	MaxLevel = CharacterStatTables.Num();
+
 	UpdateTime = 1.f;
 }
 
@@ -39,6 +54,11 @@ void UMyGameInstance::Shutdown()
 	Super::Shutdown();
 
 	SaveLastRewardTime();
+}
+
+void UMyGameInstance::SetCharacterMeshIndex(USkeletalMesh* SelectedSkeletalMesh)
+{
+	CharacterSkeletalMesh = SelectedSkeletalMesh;
 }
 
 bool UMyGameInstance::CheckRewardDate()
@@ -90,8 +110,25 @@ FShopItemDataTable* UMyGameInstance::GetShopItemDataTable(int32 Index)
 	return ShopItemDataTable->FindRow<FShopItemDataTable>(*FString::FromInt(Index), TEXT(""));
 }
 
+FStatDataTable UMyGameInstance::GetCharacterStat(int32 Level)
+{
+	if (Level >= 1 && Level < MaxLevel)
+	{
+		return CharacterStatTables[Level - 1];
+	}
+	return FStatDataTable();
+	//return *StatDataTable->FindRow<FStatDataTable>(*FString::FromInt(Level), TEXT(""));
+}
+
+
 float UMyGameInstance::GetUpdateTime()
 {
 	return UpdateTime;
 }
+
+USkeletalMesh* UMyGameInstance::GetSelectedSkeletalMesh()
+{
+	return CharacterSkeletalMesh;
+}
+
 

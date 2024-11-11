@@ -6,6 +6,8 @@
 #include "Engine/GameInstance.h"
 #include "GameData/RewardDataTable.h"
 #include "GameData/ShopItemDataTable.h"
+#include "GameData/WeaponDataTable.h"
+#include "GameData/StatDataTable.h"
 #include "MyGameInstance.generated.h"
 
 /**
@@ -23,6 +25,8 @@ public:
 	virtual void Init() override;
 	virtual void Shutdown() override;
 
+	void SetCharacterMeshIndex(USkeletalMesh* SelectedSkeletalMesh);
+
 	UFUNCTION(BlueprintCallable)
 	bool CheckRewardDate();
 
@@ -33,13 +37,19 @@ public:
 
 	FRewardDataTable* GetRewardDataTable(int32 Day);
 	FShopItemDataTable* GetShopItemDataTable(int32 Index);
+	FStatDataTable GetCharacterStat(int32 Level);
 
 	float GetUpdateTime();
+
+	USkeletalMesh* GetSelectedSkeletalMesh();
+
 
 protected:
 
 	UPROPERTY(EditAnywhere, Category = "Time")
 		float UpdateTime;
+
+	FDateTime LastRewardDate;
 
 	UPROPERTY()
 	UDataTable* RewardDataTable;
@@ -47,7 +57,15 @@ protected:
 	UPROPERTY()
 	UDataTable* ShopItemDataTable;
 
-	FDateTime LastRewardDate;
+	TArray<FStatDataTable> CharacterStatTables;
 
+	UPROPERTY(VisibleAnywhere, Category = "Stat")
+	int32 MaxLevel;
+
+	UPROPERTY(VisibleAnywhere, Category = "Character")
+	int32 CharacterMeshIdx;
+
+	UPROPERTY(VisibleAnywhere, Category = "Character")
+	USkeletalMesh* CharacterSkeletalMesh;
 
 };

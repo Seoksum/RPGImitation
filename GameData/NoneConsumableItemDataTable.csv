@@ -1,7 +1,9 @@
-﻿,WeaponName,MeshPath
-Sword1,Sword1,SkeletalMesh'/Game/Weapons/Sword1/SK_Blade_HeroSword11.SK_Blade_HeroSword11'
-Sword2,Sword2,SkeletalMesh'/Game/Weapons/Sword2/SK_Blade_BlackKnight.SK_Blade_BlackKnight'
-Sword3,Sword3,SkeletalMesh'/Game/Weapons/Sword3/SK_Blade_HeroSword10.SK_Blade_HeroSword10'
-HeadAcc1,HeadAcc1,StaticMesh'/Game/Import/Meshes/Corpse_Sword_Turban.Corpse_Sword_Turban'
-HeadAcc2,HeadAcc2,StaticMesh'/Game/Import/Meshes/Grenadier_Hat.Grenadier_Hat'
-BagAcc1,BagAcc1,StaticMesh'/Game/Import/Meshes/Food_Fruit_Pineapple_01.Food_Fruit_Pineapple_01'
+﻿,WeaponName,MeshPath,WeaponType
+Sword1,Sword1,SkeletalMesh'/Game/Weapons/Sword1/SK_Blade_HeroSword11.SK_Blade_HeroSword11',WEAPON_Sword
+Sword2,Sword2,SkeletalMesh'/Game/Weapons/Sword2/SK_Blade_BlackKnight.SK_Blade_BlackKnight',WEAPON_Sword
+Sword3,Sword3,SkeletalMesh'/Game/Weapons/Sword3/SK_Blade_HeroSword10.SK_Blade_HeroSword10',WEAPON_Sword
+HeadAcc1,HeadAcc1,StaticMesh'/Game/Import/Meshes/Corpse_Sword_Turban.Corpse_Sword_Turban',WEAPON_None
+HeadAcc2,HeadAcc2,StaticMesh'/Game/Import/Meshes/Grenadier_Hat.Grenadier_Hat',WEAPON_None
+BagAcc1,BagAcc1,StaticMesh'/Game/Import/Meshes/Food_Fruit_Pineapple_01.Food_Fruit_Pineapple_01',WEAPON_None
+Bow1,Bow1,SkeletalMesh'/Game/Weapons/Bow1/Archer_Bow_Weapon.Archer_Bow_Weapon',WEAPON_Bow
+Gun1,Gun1,SkeletalMesh'/Game/Weapons/Gun1/Launcher.Launcher',WEAPON_Gun

@@ -20,7 +20,7 @@ public:
 	void UpdateHp(float Hp);
 
 	void BindMana(class UStatComponent* StatComp);
-	void UpdateMana(float Mana, float MaxMana);
+	void UpdateMana(float Mana);
 
 
 public:

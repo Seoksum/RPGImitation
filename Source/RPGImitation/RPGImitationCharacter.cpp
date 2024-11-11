@@ -16,7 +16,9 @@
 #include "Kismet/GameplayStatics.h"
 #include "Characters/MyPlayerController.h"
 #include "Items/ItemData.h"
-#include "Items/WeaponItemData.h"
+#include "Items/WeaponItemData_Gun.h"
+#include "Items/WeaponItemData_Bow.h"
+#include "Items/WeaponItemData_Sword.h"
 #include "Items/WeaponActor.h"
 #include "Items/AccessoryActor.h"
 #include "Engine/DataTable.h"
@@ -74,6 +76,11 @@ ARPGImitationCharacter::ARPGImitationCharacter()
 	MaxAttackIndex = 3;
 	IsAttacking = false;
 	IsAttackingQ = false;
+	CurrentWeaponType = EWeaponType::WEAPON_None;
+	CurrentLevel = 1;
+
+	ZoomedFOV = 65.f;
+	ZoomInterpSpeed = 20.f;
 }
 
 void ARPGImitationCharacter::SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent)
@@ -87,25 +94,32 @@ void ARPGImitationCharacter::SetupPlayerInputComponent(class UInputComponent* Pl
 	PlayerInputComponent->BindAxis("MoveRight", this, &ARPGImitationCharacter::MoveRight);
 
 	PlayerInputComponent->BindAxis("Turn", this, &APawn::AddControllerYawInput);
-	PlayerInputComponent->BindAxis("TurnRate", this, &ARPGImitationCharacter::TurnAtRate);
 	PlayerInputComponent->BindAxis("LookUp", this, &APawn::AddControllerPitchInput);
+	PlayerInputComponent->BindAxis("TurnRate", this, &ARPGImitationCharacter::TurnAtRate);
 	PlayerInputComponent->BindAxis("LookUpRate", this, &ARPGImitationCharacter::LookUpAtRate);
+
+	//PlayerInputComponent->BindAction(TEXT("Zoom"), EInputEvent::IE_Pressed, this, &ARPGImitationCharacter::BeginZoom);
+	//PlayerInputComponent->BindAction(TEXT("Zoom"), EInputEvent::IE_Released, this, &ARPGImitationCharacter::EndZoom);
+	PlayerInputComponent->BindAxis(TEXT("CameraZoom"), this, &ARPGImitationCharacter::CameraZoom);
 
 	PlayerInputComponent->BindAction("Shop", IE_Pressed, this, &ARPGImitationCharacter::ShowShopUI);
 
 	PlayerInputComponent->BindAction(TEXT("Attack"), EInputEvent::IE_Pressed, this, &ARPGImitationCharacter::Attack);
+	PlayerInputComponent->BindAction(TEXT("Attack"), EInputEvent::IE_Released, this, &ARPGImitationCharacter::AttackEnd);
+
 	PlayerInputComponent->BindAction(TEXT("AttackQ"), EInputEvent::IE_Pressed, this, &ARPGImitationCharacter::AttackQ);
 	PlayerInputComponent->BindAction(TEXT("AttackE"), EInputEvent::IE_Pressed, this, &ARPGImitationCharacter::AttackE);
 	PlayerInputComponent->BindAction(TEXT("AttackR"), EInputEvent::IE_Pressed, this, &ARPGImitationCharacter::AttackR);
+
+
 }
 
 void ARPGImitationCharacter::BeginPlay()
 {
 	Super::BeginPlay();
 
-	Stat->SetLevelStat(1);
-
 	CurrentWeapon = GetWorld()->SpawnActor<AWeaponActor>(AWeaponActor::StaticClass());
+	CurrentWeapon->SetOwner(this);
 	CurrentHeadAcc = GetWorld()->SpawnActor< AAccessoryActor>(AAccessoryActor::StaticClass());
 	CurrentBagAcc = GetWorld()->SpawnActor< AAccessoryActor>(AAccessoryActor::StaticClass());
 
@@ -115,6 +129,17 @@ void ARPGImitationCharacter::BeginPlay()
 		UIManager = PlayerController->GetUIManager();
 	}
 
+	if (Stat)
+	{
+		Stat->SetLevelStat(CurrentLevel);
+		RequiredMana = Stat->GetTotalStat().Mana;
+		Stat->OnAddWeaponAttack.AddUObject(UIManager, &UUIManager::UpdateWeaponAttackStat);
+		Stat->OnStatChanged.AddUObject(UIManager, &UUIManager::UpdatePlayerStat);
+		Stat->OnPlayerLevelUp.AddUObject(this, &ARPGImitationCharacter::LevelUp);
+		Stat->OnPlayerLevelUp.AddUObject(UIManager, &UUIManager::UpdatePlayerLevel);
+		UIManager->BindWidget(Stat);
+	}
+
 	StatBar->InitWidget();
 	UStatBarWidget* StatBarWidget = Cast<UStatBarWidget>(StatBar->GetUserWidgetObject());
 	if (StatBarWidget)
@@ -122,6 +147,8 @@ void ARPGImitationCharacter::BeginPlay()
 		StatBarWidget->BindHp(Stat);
 		StatBarWidget->BindMana(Stat);
 	}
+
+	DefaultFOV = FollowCamera->FieldOfView;
 }
 
 void ARPGImitationCharacter::PostInitializeComponents()
@@ -135,20 +162,30 @@ void ARPGImitationCharacter::PostInitializeComponents()
 		AnimInstance->OnAttackHit_Q.AddUObject(this, &ARPGImitationCharacter::AttackHitCheck);
 		AnimInstance->OnAttackHit_E.AddUObject(this, &ARPGImitationCharacter::AttackHitCheck);
 		AnimInstance->OnAttackHit_R.AddUObject(this, &ARPGImitationCharacter::AttackHitCheck);
-
 		AnimInstance->OnMontageEnded.AddDynamic(this, &ARPGImitationCharacter::OnAttackMontageEnded);
+	}
+}
+
+void ARPGImitationCharacter::Tick(float DeltaTime)
+{
+	Super::Tick(DeltaTime);
+
+	// 줌인 & 줌아웃
+	if (CurrentWeaponType == EWeaponType::WEAPON_Gun || CurrentWeaponType == EWeaponType::WEAPON_Bow)
+	{
+		float TargetFOV = bWantsToZoom ? ZoomedFOV : DefaultFOV;
+		float NewFOV = FMath::FInterpTo(FollowCamera->FieldOfView, TargetFOV, DeltaTime, ZoomInterpSpeed);
+		FollowCamera->SetFieldOfView(NewFOV);
 	}
 }
 
 void ARPGImitationCharacter::TurnAtRate(float Rate)
 {
-	// calculate delta for this frame from the rate information
 	AddControllerYawInput(Rate * BaseTurnRate * GetWorld()->GetDeltaSeconds());
 }
 
 void ARPGImitationCharacter::LookUpAtRate(float Rate)
 {
-	// calculate delta for this frame from the rate information
 	AddControllerPitchInput(Rate * BaseLookUpRate * GetWorld()->GetDeltaSeconds());
 }
 
@@ -181,6 +218,25 @@ void ARPGImitationCharacter::MoveRight(float Value)
 	}
 }
 
+void ARPGImitationCharacter::CameraZoom(const float Value)
+{
+	if (Value == 0.f)
+		return;
+
+	const float NewTargetArmLength = CameraBoom->TargetArmLength + Value * 10.f;
+	CameraBoom->TargetArmLength = FMath::Clamp(NewTargetArmLength, 200.f, 1000.f);
+}
+
+void ARPGImitationCharacter::BeginZoom()
+{
+	bWantsToZoom = true;
+}
+
+void ARPGImitationCharacter::EndZoom()
+{
+	bWantsToZoom = false;
+}
+
 UUIManager* ARPGImitationCharacter::GetUIManager()
 {
 	if (nullptr == UIManager) { UIManager = NewObject<UUIManager>(); }
@@ -199,32 +255,107 @@ UCurrencySystem* ARPGImitationCharacter::GetCurrencySystem()
 	return CurrencySystem;
 }
 
+UStatComponent* ARPGImitationCharacter::GetStatComponent()
+{
+	if (nullptr == Stat) { Stat = NewObject<UStatComponent>(); }
+	return Stat;
+}
+
+bool ARPGImitationCharacter::GetIsPlayerDead()
+{
+	return IsDeath;
+}
+
 void ARPGImitationCharacter::UseInventoryItem(class UItemData* InItemData)
 {
 	// 아이템 고유 능력 발동
 	Inventory->RemoveItem(InItemData);
 }
 
-void ARPGImitationCharacter::EquipWeaponItem(const FString& WeaponName)
+EWeaponType ARPGImitationCharacter::GetCurrentWeaponType() { return CurrentWeaponType; }
+
+FVector ARPGImitationCharacter::GetWeaponMeshSocketLocation(const FName& SocketName)
 {
-	USkeletalMesh* WeaponMesh = LoadWeaponMesh(WeaponName);
-	if (WeaponMesh) { CurrentWeapon->AttachWeaponToSocket(this, "RightHand_SwordSocket", WeaponMesh); }
+	return CurrentWeapon->GetMuzzleSocketLocation(SocketName);
 }
 
-USkeletalMesh* ARPGImitationCharacter::LoadWeaponMesh(FString WeaponName)
+void ARPGImitationCharacter::DrinkHpPotion(float Amount)
 {
+	if (Stat) { Stat->UseHpPotion(Amount); }
+}
+
+void ARPGImitationCharacter::DrinkManaPotion(float Amount)
+{
+	if (Stat) { Stat->UseManaPotion(Amount); }
+}
+
+void ARPGImitationCharacter::DrinkExpPotion(float Amount)
+{
+	if (Stat) { Stat->SetExp(Amount); }
+}
+
+
+void ARPGImitationCharacter::EquipWeaponItem(const FString& WeaponName, FString InSocketName)
+{
+	TPair<USkeletalMesh*, EWeaponType> WeaponPair = LoadWeaponMesh(WeaponName);
+	if (WeaponPair.Key != nullptr)
+	{
+		CurrentWeapon->AttachWeaponToSocket(this, FName(*InSocketName), WeaponPair.Key);
+	}
+
+	CurrentWeaponType = WeaponPair.Value;
+	if (CurrentWeaponType == EWeaponType::WEAPON_Sword)
+	{
+		if (nullptr == WeaponItem_Sword)
+		{
+			WeaponItem_Sword = NewObject<UWeaponItemData_Sword>(GetWorld());
+			WeaponItem_Sword->InitializeWorld(GetWorld());
+			WeaponItem_Sword->SetOwner(this);
+		}
+		Stat->SetWeaponStat(WeaponItem_Sword->GetWeaponStat());
+	}
+	else if (CurrentWeaponType == EWeaponType::WEAPON_Gun)
+	{
+		if (nullptr == WeaponItem_Gun)
+		{
+			WeaponItem_Gun = NewObject<UWeaponItemData_Gun>(GetWorld());
+			WeaponItem_Gun->InitializeWorld(GetWorld());
+			WeaponItem_Gun->SetOwner(this);
+		}
+		Stat->SetWeaponStat(WeaponItem_Gun->GetWeaponStat());
+	}
+	else if (CurrentWeaponType == EWeaponType::WEAPON_Bow)
+	{
+		if (nullptr == WeaponItem_Bow)
+		{
+			WeaponItem_Bow = NewObject<UWeaponItemData_Bow>(GetWorld());
+			WeaponItem_Bow->InitializeWorld(GetWorld());
+			WeaponItem_Bow->SetOwner(this);
+		}
+		Stat->SetWeaponStat(WeaponItem_Bow->GetWeaponStat());
+	}
+}
+
+TPair<USkeletalMesh*, EWeaponType> ARPGImitationCharacter::LoadWeaponMesh(FString WeaponName)
+{
+	TPair<USkeletalMesh*, EWeaponType> Ret;
 	static const FString ContextString(TEXT("Weapon Context"));
-	UDataTable* NoneConsumableItemDataTable = LoadObject<UDataTable>(nullptr, TEXT("DataTable'/Game/Contents/Data/NoneConsumableItemDataTable.NoneConsumableItemDataTable'"));
+	UDataTable* NoneConsumableItemDataTable = LoadObject<UDataTable>
+		(nullptr, TEXT("DataTable'/Game/Contents/Data/NoneConsumableItemDataTable.NoneConsumableItemDataTable'"));
+
 	if (NoneConsumableItemDataTable)
 	{
 		FNoneConsumableItemDataTable* WeaponData = NoneConsumableItemDataTable->FindRow<FNoneConsumableItemDataTable>(*WeaponName, ContextString);
 		if (WeaponData)
 		{
 			USkeletalMesh* WeaponMesh = LoadObject<USkeletalMesh>(nullptr, *WeaponData->MeshPath);
-			return WeaponMesh;
+			EWeaponType WeaponType = WeaponData->WeaponType;
+			Ret.Key = WeaponMesh;
+			Ret.Value = WeaponType;
+			return Ret;
 		}
 	}
-	return nullptr;
+	return Ret;
 }
 
 void ARPGImitationCharacter::EquipAccessory(FString ItemName, FString InSocketName)
@@ -237,7 +368,9 @@ void ARPGImitationCharacter::EquipAccessory(FString ItemName, FString InSocketNa
 UStaticMesh* ARPGImitationCharacter::LoadAccMesh(FString AccName)
 {
 	static const FString ContextString(TEXT("Acc Context"));
-	UDataTable* NoneConsumableItemDataTable = LoadObject<UDataTable>(nullptr, TEXT("DataTable'/Game/Contents/Data/NoneConsumableItemDataTable.NoneConsumableItemDataTable'"));
+	UDataTable* NoneConsumableItemDataTable = LoadObject<UDataTable>
+		(nullptr, TEXT("DataTable'/Game/Contents/Data/NoneConsumableItemDataTable.NoneConsumableItemDataTable'"));
+
 	if (NoneConsumableItemDataTable)
 	{
 		FNoneConsumableItemDataTable* AccessoryData = NoneConsumableItemDataTable->FindRow<FNoneConsumableItemDataTable>(*AccName, ContextString);
@@ -248,6 +381,11 @@ UStaticMesh* ARPGImitationCharacter::LoadAccMesh(FString AccName)
 		}
 	}
 	return nullptr;
+}
+
+void ARPGImitationCharacter::SwitchWeapon(int32 InWeaponIndex, UWeaponItemDataAsset* WeaponItem)
+{
+	
 }
 
 void ARPGImitationCharacter::AddGold(int32 Amount)
@@ -281,12 +419,12 @@ void ARPGImitationCharacter::SetPlayerCanOpenShopUI(bool InCanOpenShopUI)
 	CanOpenShopUI = InCanOpenShopUI;
 }
 
-float ARPGImitationCharacter::TakeDamage(float DamageAmount, FDamageEvent const& DamageEvent, AController* EventInstigator, AActor* DamageCauser)
-{
-	Super::TakeDamage(DamageAmount, DamageEvent, EventInstigator, DamageCauser);
-	Stat->OnAttacked(DamageAmount);
-	return DamageAmount;
-}
+//float ARPGImitationCharacter::TakeDamage(float DamageAmount, FDamageEvent const& DamageEvent, AController* EventInstigator, AActor* DamageCauser)
+//{
+//	Super::TakeDamage(DamageAmount, DamageEvent, EventInstigator, DamageCauser);
+//	Stat->OnAttacked(DamageAmount);
+//	return DamageAmount;
+//}
 
 void ARPGImitationCharacter::OnDeath_Implementation()
 {
@@ -307,71 +445,90 @@ void ARPGImitationCharacter::OnDeath_Implementation()
 	GetCapsuleComponent()->SetCollisionEnabled(ECollisionEnabled::NoCollision);
 }
 
+void ARPGImitationCharacter::IncreaseExp(int32 Exp)
+{
+	Stat->SetExp(Exp);
+}
+
+void ARPGImitationCharacter::LevelUp(int32 PlayerLevel)
+{	
+	// 파티클,사운드 생성
+	UGameplayStatics::SpawnEmitterAttached(LevelupEffect, GetMesh());
+	UGameplayStatics::PlaySoundAtLocation(this, LevelupSound, GetActorLocation());
+
+	// 레벨업
+	CurrentLevel = PlayerLevel;
+	Stat->SetLevelStat(CurrentLevel); // 체력,마나 MAX 값으로 설정
+}
+
 void ARPGImitationCharacter::Attack()
 {
-	if (IsAttacking)
-		return;
+	if (IsAttacking) return;
 
-	IsAttacking = true;
-	AnimInstance->PlayAttackMontage();
-	AnimInstance->JumpToSection(AttackIndex);
-	AttackIndex = (AttackIndex + 1) % MaxAttackIndex;
+	if (CurrentWeaponType == EWeaponType::WEAPON_Sword)
+	{
+		IsAttacking = true;
+		AnimInstance->PlayAttackMontage();
+		AnimInstance->JumpToSection(AttackIndex);
+		AttackIndex = (AttackIndex + 1) % MaxAttackIndex;
+	}
+	else if (CurrentWeaponType == EWeaponType::WEAPON_Gun && WeaponItem_Gun)
+	{
+		WeaponItem_Gun->StartFire();
+	}
+	else if (CurrentWeaponType == EWeaponType::WEAPON_Bow && WeaponItem_Bow)
+	{
+		AnimInstance->PlayBowAttackMontage();
+		WeaponItem_Bow->Attack();
+	}
+}
+
+void ARPGImitationCharacter::AttackEnd()
+{
+	if (CurrentWeaponType == EWeaponType::WEAPON_Gun && WeaponItem_Gun)
+	{
+		WeaponItem_Gun->StopFire();
+		IsAttacking = false;
+	}
 }
 
 void ARPGImitationCharacter::AttackQ()
 {
-	if (IsAttackingQ)
+	if (CurrentWeaponType != EWeaponType::WEAPON_Sword
+		|| IsAttackingQ || Stat->GetCurrentMana() < RequiredMana)
 		return;
 
 	IsAttackingQ = true;
+	Stat->OnAttacking(RequiredMana);
 	AnimInstance->PlayAttackMontageQ();
 	UIManager->StartSkillAttackQ();
 }
 
 void ARPGImitationCharacter::AttackE()
 {
-	if (IsAttackingE)
+	if (CurrentWeaponType != EWeaponType::WEAPON_Sword || IsAttackingE || Stat->GetCurrentMana() < RequiredMana+5.f)
 		return;
 
 	IsAttackingE = true;
+	Stat->OnAttacking(RequiredMana+5.f);
 	AnimInstance->PlayAttackMontageE();
 	UIManager->StartSkillAttackE();
 }
 
 void ARPGImitationCharacter::AttackR()
 {
-	if (IsAttackingR)
+	if (CurrentWeaponType != EWeaponType::WEAPON_Sword || IsAttackingR || Stat->GetCurrentMana() < RequiredMana + 10.f)
 		return;
 
 	IsAttackingR = true;
+	Stat->OnAttacking(RequiredMana + 10.f);
 	AnimInstance->PlayAttackMontageR();
 	UIManager->StartSkillAttackR();
 }
 
 void ARPGImitationCharacter::AttackHitCheck(float InDamage, float InTraceDistance, class UParticleSystem* InParticle)
 {
-	TArray<FHitResult> TraceHits;
-	FVector TraceStart = GetActorLocation();
-	FVector TraceEnd = TraceStart + (GetActorForwardVector() * InTraceDistance);
-	FCollisionShape SweepShape = FCollisionShape::MakeSphere(Radius);
-
-	FCollisionQueryParams QueryParams;
-	QueryParams.AddIgnoredActor(this);
-
-	bool bResult = GetWorld()->SweepMultiByChannel(TraceHits, TraceStart, TraceEnd,
-		FQuat::Identity, ECC_GameTraceChannel1, SweepShape, QueryParams);
-	if (bResult)
-	{
-		for (FHitResult& Hit : TraceHits)
-		{
-			FDamageEvent DamageEvent;
-			Hit.Actor->TakeDamage(InDamage, DamageEvent, GetController(), this);
-			if (InParticle)
-			{
-				UGameplayStatics::SpawnEmitterAtLocation(GetWorld(), InParticle, Hit.Actor->GetTransform());
-			}
-		}
-	}
+	if (WeaponItem_Sword) { WeaponItem_Sword->Attack(InDamage, InTraceDistance, InParticle); }
 }
 
 void ARPGImitationCharacter::OnAttackMontageEnded(UAnimMontage* Montage, bool bInterrupted)

@@ -4,6 +4,7 @@
 
 #include "CoreMinimal.h"
 #include "Animation/AnimInstance.h"
+#include "GameData/GameEnums.h"
 #include "MyAnimInstance.generated.h"
 
 /**
@@ -37,6 +38,8 @@ public:
 	void PlayAttackMontageQ();
 	void PlayAttackMontageE();
 	void PlayAttackMontageR();
+
+	void PlayBowAttackMontage();
 
 
 	void JumpToSection(int32 SectionIndex);
@@ -81,6 +84,9 @@ public:
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "State", Meta = (AllowPrivateAccess = true))
 		float AttackPower;
 
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "State", Meta = (AllowPrivateAccess = true))
+		EWeaponType WeaponType;
+
 	// Anim Montage
 protected:
 
@@ -97,6 +103,8 @@ protected:
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Attack Montage", Meta = (AllowPrivateAccess = true))
 	UAnimMontage* AttackMontage_R;
 
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Attack Montage", Meta = (AllowPrivateAccess = true))
+	UAnimMontage* BowAttackMontage;
 
 
 	// Particle System
@@ -110,6 +118,9 @@ protected:
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "ParticleSystem")
 	class UParticleSystem* AttackParticleE;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "ParticleSystem")
+	class UParticleSystem* EnemyHitParticle;
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Meta = (AllowPrivateAccess = true))
 	class UStatComponent* Stat;

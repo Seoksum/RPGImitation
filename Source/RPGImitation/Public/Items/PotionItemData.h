@@ -23,7 +23,7 @@ public:
 
 public:
 
-	
+	float PotionAmount;
 
 
 };
